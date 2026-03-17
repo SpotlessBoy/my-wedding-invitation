@@ -29,17 +29,18 @@ export default function WeddingInvitation() {
   
   useEffect(() => {
     setIsMounted(true);
-	// --- 👇 추가된 부분: 카카오톡 브라우저 리사이징 버그 해결용 vh 계산 👇 ---
+    
+    // ✅ 1. vh 높이를 계산하고 CSS 변수로 설정하는 함수 정의
     const setVh = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
-    
+
     setVh(); // 최초 1회 실행
     window.addEventListener('resize', setVh); // 화면 회전 시 대응
+    
     // ----------------------------------------------------------------------
-	
-	
+    
     // 목표 날짜: 2026년 6월 7일 12시 30분
     const target = new Date('2026-06-07T12:30:00+09:00').getTime();
 
@@ -58,13 +59,12 @@ export default function WeddingInvitation() {
         clearInterval(interval);
       }
     }, 1000);
-    // 👇 클린업 함수에 resize 이벤트 제거 추가
+    
+    // ✅ 2. 오류가 났던 부분: 컴포넌트 언마운트 시 인터벌과 이벤트 리스너를 한 번에 정리
     return () => {
       clearInterval(interval);
       window.removeEventListener('resize', setVh); 
     };
-
-    return () => clearInterval(interval);
   }, []);
 
   // 2026년 6월 달력 데이터 (6월 1일은 월요일)
@@ -85,10 +85,15 @@ export default function WeddingInvitation() {
         
         {/* 1. 메인 커버 섹션 */}
         {/* 수정 전: h-[100svh] 제거하고 style 추가 */}
-        <section 
-          className="fixed top-0 left-1/2 -translate-x-1/2 z-0 w-full max-w-[480px] overflow-hidden"
-          style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
-        >
+        <section
+		className="fixed top-0 left-1/2 -translate-x-1/2 z-0 w-full max-w-[480px] overflow-hidden"
+		style={{
+				height: 'calc(var(--vh, 1vh) * 100)',
+				willChange: 'transform',           // ✅ 추가
+				backfaceVisibility: 'hidden',      // ✅ 추가
+				WebkitBackfaceVisibility: 'hidden' // ✅ 추가 (Safari/카카오 대응)
+				}}
+		>
           <div className="absolute inset-0">
             <Image
               src="/images/main.jpg"
@@ -108,10 +113,15 @@ export default function WeddingInvitation() {
           
           <FadeIn delay={0.5}>
             {/* 수정 전: min-h-[100svh] 제거하고 style 추가 */}
-            <div 
-              className="relative z-20 flex flex-col items-center justify-start pt-14 px-8 text-center"
-              style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}
-            >
+            <div
+				className="relative z-20 flex flex-col items-center justify-start pt-14 px-8 text-center"
+				style={{
+					minHeight: 'calc(var(--vh, 1vh) * 100)',
+					willChange: 'transform',           // ✅ 추가
+					backfaceVisibility: 'hidden',      // ✅ 추가
+					WebkitBackfaceVisibility: 'hidden' // ✅ 추가
+						}}
+			>
               <h1 className="text-2xl font-semibold tracking-[0.22em] mb-4 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.8),0_2px_8px_rgba(0,0,0,0.6)]">
                 우리, 결혼합니다
               </h1>
