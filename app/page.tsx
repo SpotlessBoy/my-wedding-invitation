@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
 import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
@@ -22,6 +22,44 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function WeddingInvitation() {
   const [openAccount, setOpenAccount] = useState<'groom' | 'bride' | null>(null);
   const [showMapImage, setShowMapImage] = useState(false); // 약도 이미지 팝업용
+  
+  // D-Day 타이머 상태 관리
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+    // 목표 날짜: 2026년 6월 7일 12시 30분
+    const target = new Date('2026-06-07T12:30:00+09:00').getTime();
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const difference = target - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          mins: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          secs: Math.floor((difference % (1000 * 60)) / 1000),
+        });
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // 2026년 6월 달력 데이터 (6월 1일은 월요일)
+  const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+  const calendarDays = [
+    null, 1, 2, 3, 4, 5, 6,
+    7, 8, 9, 10, 11, 12, 13,
+    14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27,
+    28, 29, 30
+  ];
 
   return (
     <main className="min-h-screen bg-[#FDFDFD] text-[#333333] font-serif selection:bg-rose-100 relative">
@@ -117,8 +155,110 @@ export default function WeddingInvitation() {
           </FadeIn>
         </section>
 
-        {/* 3. 장소 안내 섹션 */}
+
+{/* 🌟 새로 추가된 3. WEDDING DATE 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-white">
+          <FadeIn>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">WEDDING DATE</h2>
+            
+            {/* 1. 날짜 및 시간 강조 */}
+            <div className="mb-12">
+              <p className="text-[28px] font-serif tracking-[0.15em] text-gray-800 mb-2">2026. 06. 07.</p>
+              <p className="text-[15px] text-gray-500 font-medium">일요일  12시 30분</p>
+            </div>
+
+            {/* 2. 달력 디자인 */}
+            <div className="w-full max-w-[280px] mx-auto mb-14">
+              <div className="grid grid-cols-7 gap-y-4 text-xs tracking-widest mb-4 border-b border-t border-gray-100 py-4">
+                {weekDays.map((day, i) => (
+                  <div key={i} className={`font-medium ${
+                    i === 0 ? 'text-rose-400' : // 일요일은 빨간색(로즈톤)
+                    i === 6 ? 'text-blue-400' : // 토요일은 파란색
+                    'text-gray-400'             // 평일은 회색
+                  }`}>
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-y-5 text-[15px] font-serif">
+                {calendarDays.map((day, i) => {
+                  // 요일 인덱스 확인 (0: 일요일, 6: 토요일)
+                  const isSunday = i % 7 === 0;
+                  const isSaturday = i % 7 === 6;
+                  // 6월 3일 (지방선거 공휴일) 지정
+                  const isHoliday = day === 3;
+                  
+                  return (
+                    <div key={i} className="flex items-center justify-center">
+                      {day === 7 ? (
+                        // 결혼식 당일 (하이라이트)
+                        <div className="w-8 h-8 flex items-center justify-center bg-rose-100 text-rose-500 rounded-full font-bold shadow-sm">
+                          {day}
+                        </div>
+                      ) : (
+                        // 그 외의 날짜 (토/일/공휴일 색상 적용)
+                        <span className={`
+                          ${isSunday || isHoliday ? 'text-rose-400' : ''} 
+                          ${isSaturday ? 'text-blue-400' : ''} 
+                          ${!isSunday && !isSaturday && !isHoliday ? 'text-gray-700' : ''}
+                        `}>
+                          {day}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+			
+			{/* 👇 새로 추가되는 분위기 환기용 가로 스냅 사진 👇 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative w-[100%] aspect-[3/2] mx-auto mb-10 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
+            >
+              <Image
+                src="/images/sub_date.jpg" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
+                alt="골목길 스냅이에욥"
+                fill
+                quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
+                className="object-cover object-center"
+                sizes="(max-w: 480px) 100vw, 480px"
+              />
+            </motion.div>
+            {/* 👆 추가된 스냅 사진 끝 👆 */}
+
+            {/* 3 & 4. 실시간 카운트다운 및 동적 메시지 */}
+            {isMounted && (
+              <div className="bg-[#FAFAFA] rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex justify-center items-center gap-3 mb-6">
+                  {[
+                    { label: 'DAYS', value: timeLeft.days },
+                    { label: 'HOURS', value: timeLeft.hours },
+                    { label: 'MINS', value: timeLeft.mins },
+                    { label: 'SECS', value: timeLeft.secs },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex flex-col items-center">
+                      <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl font-medium text-gray-800 mb-2 border border-gray-50">
+                        {String(item.value).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] text-gray-400 tracking-widest font-medium">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[15px] text-gray-600 font-medium mt-2">
+                  상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이{' '}
+                  <span className="text-rose-500 font-bold font-sans tracking-tight lining-nums tabular-nums">{timeLeft.days}일</span> 남았습니다.
+                </p>
+              </div>
+            )}
+          </FadeIn>
+        </section>
+		
+        {/* 4. 장소 안내 섹션 (배경색 교차를 위해 #FAFAFA로 변경) */}
+        <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">LOCATION</h2>
             <div className="relative w-full aspect-[20/9] rounded-2xl overflow-hidden mb-10 shadow-sm mx-auto">
@@ -133,7 +273,7 @@ export default function WeddingInvitation() {
               />
             </div>
             <p className="text-base font-medium mb-2">호텔 인터불고 엑스코, 2층 그랑파티오</p>
-            <p className="text-[15px] mb-8">(대구광역시 북구 유통단지로80)</p>
+            <p className="text-[15px] mb-8">(대구광역시 북구 유통단지로 80)</p>
             
             <div className="w-full h-[250px] mb-6 relative z-10">
               <NaverMap />
@@ -146,11 +286,50 @@ export default function WeddingInvitation() {
               <Map size={18} strokeWidth={2.5} />
               약도 이미지 보기
             </button>
+			
+			{/* 👇 새로 추가되는 네비게이션 연동 섹션 👇 */}
+            <div className="mt-8 pt-8 border-t border-gray-100 text-left">
+              <h3 className="font-bold text-gray-800 mb-1 text-base">네비게이션</h3>
+              <p className="text-sm text-gray-500 mb-5">원하는 앱을 선택하시면 길안내가 시작합니다.</p>
+              
+              <div className="flex justify-between gap-2">
+                {/* 1. 네이버 지도 (앱 호출 공식 URL) */}
+                <button 
+                  onClick={() => window.open('https://app.map.naver.com/launchApp/?version=11&menu=navigation&goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003')}
+                  className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
+                >
+                  <Image src="/images/icon-naver.png" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
+                  네이버지도
+                </button>
+
+                {/* 2. 티맵 (URI 스킴 호출) */}
+                <button 
+                  onClick={() => window.location.href = 'tmap://route?goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003'}
+                  className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
+                >
+                  <Image src="/images/icon-tmap.png" alt="티맵" width={18} height={18} className="rounded-[4px]" />
+                  티맵
+                </button>
+
+                {/* 3. 카카오내비 (웹/앱 자동연결 링크) */}
+                <button 
+                  onClick={() => window.open('https://map.kakao.com/link/to/호텔 인터불고 엑스코,35.9069985378003,128.611285546387')}
+                  className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
+                >
+                  <Image src="/images/icon-kakao.png" alt="카카오내비" width={18} height={18} className="rounded-[4px]" />
+                  카카오내비
+                </button>
+              </div>
+            </div>
+            {/* 👆 네비게이션 연동 섹션 끝 👆 */}
+			
+			
+			
           </FadeIn>
         </section>
 
-        {/* 4. 마음 전하실 곳 섹션 생략 (기존 코드와 동일) */}
-        <section className="relative z-10 -mt-px py-24 px-8 bg-[#FAFAFA]">
+        {/* 5. 마음 전하실 곳 섹션 생략 (기존 코드와 동일) */}
+        <section className="relative z-10 -mt-px py-24 px-8 bg-white">
           {/* ... 기존 계좌번호 코드 동일 ... */}
           <FadeIn>
             <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium">FOR YOUR HEART</h2>
@@ -218,7 +397,7 @@ export default function WeddingInvitation() {
           </FadeIn>
         </section>
 
-        {/* 5. 푸터 */}
+        {/* 6. 푸터 */}
         <footer className="relative z-10 -mt-px py-12 bg-white text-center">
           <FadeIn>
             <div className="flex justify-center gap-4 mb-8">
@@ -236,7 +415,7 @@ export default function WeddingInvitation() {
               </button>
             </div>
             <p className="text-xs text-gray-400 tracking-widest">
-              &copy; 2026. Groom & Bride.
+              &copy; 2026. Yeop & Sol. H-E-A
             </p>
           </FadeIn>
         </footer>
