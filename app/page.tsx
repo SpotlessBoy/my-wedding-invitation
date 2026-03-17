@@ -30,14 +30,24 @@ export default function WeddingInvitation() {
   useEffect(() => {
     setIsMounted(true);
     
-    // ✅ 1. vh 높이를 계산하고 CSS 변수로 설정하는 함수 정의
+    // ✅ 모바일 스크롤 시 주소창 숨김/보임에 따른 화면 튐 현상 방지 로직
+    let windowWidth = window.innerWidth;
+
     const setVh = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
+    const handleResize = () => {
+      // 화면 너비가 변경되었을 때만(예: 기기 가로/세로 회전) vh를 재계산
+      if (window.innerWidth !== windowWidth) {
+        windowWidth = window.innerWidth;
+        setVh();
+      }
+    };
+
     setVh(); // 최초 1회 실행
-    window.addEventListener('resize', setVh); // 화면 회전 시 대응
+    window.addEventListener('resize', handleResize); // 수정된 리사이즈 핸들러 등록
     
     // ----------------------------------------------------------------------
     
@@ -60,10 +70,9 @@ export default function WeddingInvitation() {
       }
     }, 1000);
     
-    // ✅ 2. 오류가 났던 부분: 컴포넌트 언마운트 시 인터벌과 이벤트 리스너를 한 번에 정리
     return () => {
       clearInterval(interval);
-      window.removeEventListener('resize', setVh); 
+      window.removeEventListener('resize', handleResize); // 클린업 함수에도 handleResize 적용
     };
   }, []);
 
