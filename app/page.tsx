@@ -29,6 +29,17 @@ export default function WeddingInvitation() {
   
   useEffect(() => {
     setIsMounted(true);
+	// --- 👇 추가된 부분: 카카오톡 브라우저 리사이징 버그 해결용 vh 계산 👇 ---
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    setVh(); // 최초 1회 실행
+    window.addEventListener('resize', setVh); // 화면 회전 시 대응
+    // ----------------------------------------------------------------------
+	
+	
     // 목표 날짜: 2026년 6월 7일 12시 30분
     const target = new Date('2026-06-07T12:30:00+09:00').getTime();
 
@@ -47,6 +58,11 @@ export default function WeddingInvitation() {
         clearInterval(interval);
       }
     }, 1000);
+    // 👇 클린업 함수에 resize 이벤트 제거 추가
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', setVh); 
+    };
 
     return () => clearInterval(interval);
   }, []);
@@ -68,7 +84,11 @@ export default function WeddingInvitation() {
       <div className="max-w-[480px] mx-auto bg-white shadow-[0_0_20px_rgba(0,0,0,0.05)] relative z-10 min-h-screen">
         
         {/* 1. 메인 커버 섹션 */}
-        <section className="fixed top-0 left-1/2 -translate-x-1/2 z-0 w-full max-w-[480px] h-[100svh] overflow-hidden">
+        {/* 수정 전: h-[100svh] 제거하고 style 추가 */}
+        <section 
+          className="fixed top-0 left-1/2 -translate-x-1/2 z-0 w-full max-w-[480px] overflow-hidden"
+          style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
+        >
           <div className="absolute inset-0">
             <Image
               src="/images/main.jpg"
@@ -87,7 +107,11 @@ export default function WeddingInvitation() {
           </div>
           
           <FadeIn delay={0.5}>
-            <div className="relative z-20 flex flex-col items-center justify-start min-h-[100svh] pt-14 px-8 text-center">
+            {/* 수정 전: min-h-[100svh] 제거하고 style 추가 */}
+            <div 
+              className="relative z-20 flex flex-col items-center justify-start pt-14 px-8 text-center"
+              style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}
+            >
               <h1 className="text-2xl font-semibold tracking-[0.22em] mb-4 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.8),0_2px_8px_rgba(0,0,0,0.6)]">
                 우리, 결혼합니다
               </h1>
@@ -103,7 +127,13 @@ export default function WeddingInvitation() {
           </FadeIn>
         </section>
 
-        <div className="relative z-0 h-[100svh] shrink-0" aria-hidden="true" />
+        {/* 메인 커버 뒤에서 공간을 차지해주는 더미 div */}
+        {/* 수정 전: h-[100svh] 제거하고 style 추가 */}
+        <div 
+          className="relative z-0 shrink-0" 
+          style={{ height: 'calc(var(--vh, 1vh) * 100)' }} 
+          aria-hidden="true" 
+        />
 
         {/* 2. 초대글 섹션 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
