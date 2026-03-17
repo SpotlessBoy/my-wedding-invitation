@@ -10,9 +10,9 @@ import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
 // 부드럽게 나타나는 애니메이션 컴포넌트
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
-    initial={{ opacity: 0, y: 30 }}
+    initial={{ opacity: 0, y: 50 }} // 이동 거리를 살짝 늘려주면 모션이 더 극적으로 보입니다
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-100px' }}
+    viewport={{ once: false, amount: 0.1 }} // once를 false로 변경하고, 화면에 10% 보일 때 작동하도록 변경
     transition={{ duration: 0.8, delay, ease: 'easeOut' }}
   >
     {children}
@@ -87,7 +87,11 @@ export default function WeddingInvitation() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#FDFDFD] text-[#333333] font-serif selection:bg-rose-100 relative">
+    // 변경 후 (우클릭 방지 이벤트 및 Tailwind CSS 선택 방지 클래스 추가)
+	<main 
+		className="min-h-screen bg-[#FDFDFD] text-[#333333] font-serif selection:bg-rose-100 relative select-none [&_img]:pointer-events-none"
+		onContextMenu={(e) => e.preventDefault()} // 우클릭 방지
+	>
 
       {/* 모바일 화면 중앙 정렬을 위한 컨테이너 */}
       <div className="max-w-[480px] mx-auto bg-white shadow-[0_0_20px_rgba(0,0,0,0.05)] relative z-10 min-h-screen">
@@ -169,10 +173,10 @@ export default function WeddingInvitation() {
             </p>
             
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, y: 15 }} // y축 이동을 추가해 주면 서서히 올라옵니다
+			  whileInView={{ opacity: 1, y: 0 }}
+			  viewport={{ once: false, amount: 0.1 }} // once: true를 once: false로 변경
+			  transition={{ duration: 0.8 }}
               className="relative w-[100%] aspect-[4/3] mx-auto mb-12 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
@@ -262,10 +266,10 @@ export default function WeddingInvitation() {
 			
 			{/* 👇 새로 추가되는 분위기 환기용 가로 스냅 사진 👇 */}
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, y: 15 }} // y축 이동을 추가해 주면 서서히 올라옵니다
+			  whileInView={{ opacity: 1, y: 0 }}
+			  viewport={{ once: false, amount: 0.1 }} // once: true를 once: false로 변경
+			  transition={{ duration: 0.8 }}
               className="relative w-[100%] aspect-[3/2] mx-auto mb-10 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
             >
               <Image
