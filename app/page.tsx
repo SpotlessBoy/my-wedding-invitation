@@ -103,6 +103,22 @@ export default function WeddingInvitation() {
       window.removeEventListener('resize', handleResize); // 클린업 함수에도 handleResize 적용
     };
   }, []);
+  
+  // 갤러리 모달 오픈 시 배경 스크롤 및 브라우저 UI 바운스 완벽 차단
+  useEffect(() => {
+    if (selectedPhotoIndex !== null || showMapImage) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none'; // 브라우저 기본 터치 액션 무시
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.touchAction = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.touchAction = 'auto';
+    };
+  }, [selectedPhotoIndex, showMapImage]);
+
 
   // 2026년 6월 달력 데이터 (6월 1일은 월요일)
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
@@ -440,15 +456,14 @@ export default function WeddingInvitation() {
               ))}
             </div>
 
-            {/* 더보기 버튼 */}
-            {!showAllGallery && (
-              <button
-                onClick={() => setShowAllGallery(true)}
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-50 text-gray-600 rounded-full font-medium text-[15px] border border-gray-200 transition-colors active:bg-gray-100"
-              >
-                사진 더보기
-              </button>
-            )}
+            {/* 더보기 및 접기 버튼 (토글) */}
+            <button
+              onClick={() => setShowAllGallery(!showAllGallery)}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-50 text-gray-600 rounded-full font-medium text-[15px] border border-gray-200 transition-colors active:bg-gray-100 mt-4"
+            >
+              {showAllGallery ? '접기' : '더 보기'}
+            </button>
+            
           </FadeIn>
         </section>
 		
@@ -574,9 +589,10 @@ export default function WeddingInvitation() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-[480px] h-[75svh]"
+              className="relative w-full max-w-[480px] h-[75dvh] touch-pan-x"
               drag="x" // 좌우 스와이프 활성화
               dragConstraints={{ left: 0, right: 0 }} // 드래그 탄성 제한
+			  dragDirectionLock // 수직/수평 드래그 방향을 엄격하게 고정
               onDragEnd={(e, { offset }) => {
                 // 스와이프 감도 (50px 이상 밀면 넘어감)
                 if (offset.x < -50) handleNextPhoto(e as any);
