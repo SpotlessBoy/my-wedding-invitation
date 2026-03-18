@@ -275,7 +275,7 @@ export default function WeddingInvitation() {
           <FadeIn delay={0.5}>
             {/* 수정 전: min-h-[100svh] 제거하고 style 추가 */}
             <div
-				className="relative z-20 flex flex-col items-center justify-start pt-14 px-8 text-center"
+				className="relative z-20 flex flex-col items-center justify-start pt-14 px-8 text-center pointer-events-none"
 				style={{
 					minHeight: 'calc(var(--vh, 1vh) * 100)',
 					willChange: 'transform',           // ✅ 추가

@@ -20,11 +20,12 @@ const pastelColors = ['#FFD1DC', '#FFC0CB', '#FDFD96', '#E4F8E4', '#CFE2F3'];
 
 // 파스텔 톤 대신 빈티지/말린 꽃 색상 팔레트로 교체
 const vintageColors = [
-  '#C19A9B', // 빛바랜 장미 (Dusty Rose)
-  '#D1AF73', // 빈티지 골드 (Antique Gold)
-  '#9A9E7F', // 말린 올리브 (Muted Olive)
-  '#8E9EB1', // 빛바랜 블루 (Desaturated Blue)
-  '#CFC5B8', // 빈티지 오프화이트 (Pale Taupe)
+  '#FFD1DC', // 파스텔 핑크 (유저 요청: 핑크) - 가장 화사한 톤
+  '#FFFFE0', // 라이트 옐로우 (유저 요청: 노랑) - 아주 밝은 레몬 톤
+  '#FFDAB9', // 파스텔 오렌지/애프리콧 (유저 요청: 주황) - 부드러운 살구 톤
+  '#FFFFF0', // 라이트 화이트/아이보리 (유저 요청: 화이트) - 따뜻하고 화사한 톤
+  '#FFB6C1', // 라이트 핑크 (보너스: 더 화사한 핑크)
+  '#FFF8DC', // 곤 실크 (보너스: 아이보리 옐로우)
 ];
 
 // 하트 모양 SVG 꽃잎 컴포넌트
@@ -64,9 +65,11 @@ export default function PetalRain() {
   // 1. 꽃잎 주기적 생성
   useEffect(() => {
     const intervalId = setInterval(() => {
-      // 화면 꽉 차지 않게 생성 제한 (예: 25개)
-      if (petals.length < 25) {
-        setPetals((prev) => [
+      // 화면 꽉 차지 않게 생성 제한 (예: 30개)
+	  // 👇 setPetals 안에서 prev 상태를 직접 확인하도록 로직을 변경합니다 👇
+      setPetals((prev) => {
+        if (prev.length < 30) {
+          return [
           ...prev,
           {
             id: Date.now(),
@@ -79,12 +82,14 @@ export default function PetalRain() {
             rotate: Math.random() * 360, // 무작위 초기 회전 각도			
             baseOpacity: 0.3 + Math.random() * 0.6, // 4. 투명도 다변화: 0.3(많이 흐릿함)부터 0.9(선명함) 사이의 무작위 값
           },
-        ]);
+        ];
       }
-    }, 1200); // 생성 주기도 살짝 당겨서 자연스럽게 이어지도록 함(원래 1.5초마다)
+        return prev; // 30개 이상이면 기존 배열을 그대로 유지 (아무 일도 안 함)
+    });
+    }, 700); // 생성 주기도 살짝 당겨서 자연스럽게 이어지도록 함(원래 1.5초마다)
 
     return () => clearInterval(intervalId);
-  }, [petals]);
+  }, []); // 👈 의존성 배열을 완전히 비워줍니다! 이제 타이머가 절대 죽지 않습니다.
 
   // 꽃잎 제거 (화면 밖으로 나가면 삭제)
   const removePetal = (id: number) => {
