@@ -434,36 +434,62 @@ export default function WeddingInvitation() {
             
             {/* 메이슨리(Masonry) 레이아웃 그리드 */}
             {/* CSS columns-2를 사용하여 세로로 흐르듯 자연스럽게 빈 공간을 채웁니다 */}
-            <div className="columns-2 gap-3 space-y-3 mb-8">
-              {displayedPhotos.map((photo, index) => (
-                <motion.div
-                  key={photo.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "0px 0px -50px 0px" }} // 여기도 떨림 방지 마진 추가!
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
-                  // 👇 inline-block 을 추가하여 WebKit의 단락 계산 버그를 강제로 고정합니다 👇
-                  className={`relative inline-block w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transition-transform active:scale-95 break-inside-avoid mb-3`}
-                  // 👇 iOS 사파리 및 카카오톡 브라우저의 악성 터치 반응을 모두 셧다운시킵니다 👇
-                  style={{
-                    WebkitTouchCallout: 'none',       // 꾹 눌렀을 때 뜨는 '이미지 저장' 팝업 완벽 차단
-                    WebkitUserSelect: 'none',         // 텍스트/이미지 선택 돋보기 차단
-                    WebkitTapHighlightColor: 'transparent', // 터치 시 번쩍이는 회색/파란색 음영 차단
-                  }}
-                  onClick={() => setSelectedPhotoIndex(photo.id)}
-                >
-                  <Image
-                    src={photo.src}
-                    alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
-                    fill
-                    quality={50}
-                    priority={index < 6} // 아까 적용한 상위 6장 미리 로딩
-                    // 👇 hover:scale-105 를 과감히 삭제했습니다! 👇
-                    className="object-cover transition-transform duration-500"
-                    sizes="(max-w: 480px) 50vw, 240px"
-                  />
-                </motion.div>
-              ))}
+            {/* CSS columns-2 버그를 완벽히 회피하는 Flexbox 2단 분리 레이아웃 */}
+            <div className="flex gap-3 mb-8 items-start">
+              
+              {/* 왼쪽 기둥 (인덱스 0, 2, 4...) */}
+              <div className="flex-1 flex flex-col gap-3">
+                {displayedPhotos.filter((_, i) => i % 2 === 0).map((photo, index) => (
+                  <motion.div
+                    key={photo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                    // 다시 텐션감 있는 터치 모션(active:scale-95)을 부활시킵니다!
+                    className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                    onClick={() => setSelectedPhotoIndex(photo.id)}
+                  >
+                    <Image
+                      src={photo.src}
+                      alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
+                      fill
+                      quality={50}
+                      priority={index < 5} // 왼쪽 줄 상위 5장 미리 로딩
+                      className="object-cover"
+                      sizes="(max-w: 480px) 50vw, 240px"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* 오른쪽 기둥 (인덱스 1, 3, 5...) */}
+              <div className="flex-1 flex flex-col gap-3">
+                {displayedPhotos.filter((_, i) => i % 2 === 1).map((photo, index) => (
+                  <motion.div
+                    key={photo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                    className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                    onClick={() => setSelectedPhotoIndex(photo.id)}
+                  >
+                    <Image
+                      src={photo.src}
+                      alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
+                      fill
+                      quality={50}
+                      priority={index < 5} // 오른쪽 줄 상위 5장 미리 로딩
+                      className="object-cover"
+                      sizes="(max-w: 480px) 50vw, 240px"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+
             </div>
 
             {/* 더보기 및 접기 버튼 (토글) */}
