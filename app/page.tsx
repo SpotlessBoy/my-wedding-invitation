@@ -21,14 +21,13 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 );
 
 
-// 👇 1. 커튼 전용 애니메이션 정의 (variants) 👇
-// 고급스러운 연극 커튼 전용 이징 곡선 [0.76, 0, 0.24, 1] 사용
+// 👇 1. 커튼 전용 애니메이션 정의 (TS 에러 해결) 👇
 const curtainLeftVariants = {
   initial: { x: 0 },
   animate: { x: 0 },
   exit: { 
     x: '-100%', 
-    transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1], delay: 1.0 } // 글자가 먼저 등장하고, 1.0초 뒤에 커튼이 열립니다
+    transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 1.0 } 
   },
 };
 
@@ -37,7 +36,7 @@ const curtainRightVariants = {
   animate: { x: 0 },
   exit: { 
     x: '100%', 
-    transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1], delay: 1.0 } // 글자가 먼저 등장하고, 1.0초 뒤에 커튼이 열립니다
+    transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 1.0 } 
   },
 };
 
@@ -178,51 +177,23 @@ export default function WeddingInvitation() {
 	>
 	
 	
-	{/* 🌟 새로 추가되는 오프닝 커튼 (인트로 스플래시) 🌟 */}
+	{/* 🌟 오프닝 커튼 (인트로 스플래시) 🌟 */}
       <AnimatePresence>
         {showIntro && (
           <motion.div
             key="intro-splash"
-            className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden touch-none"
-            // 👇 인트로의 배경색을 투명하게 만들어, 뒤의 메인 사진이 커튼 틈새로 살짝 보이게 합니다 👇
-            initial={{ backgroundColor: "rgba(255,255,255,1)" }}
-            animate={{ backgroundColor: "rgba(255,255,255,1)" }}
-            exit={{ backgroundColor: "rgba(255,255,255,0)" }} // exit 시점에 배경을 투명하게 만듦
+            className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden touch-none"
+            exit={{ backgroundColor: "rgba(255,255,255,0)", transition: { delay: 1.5 } }} // 커튼이 다 열리면 전체 배경도 투명하게 사라짐
           >
 
-            {/* A. 뒤에서 대기하다가 극적으로 등장할 텍스트 영역 (모션 그대로) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.0, delay: 0.3 }} // 커튼이 닫혀있을 때 미리 글자가 나타남
-              className="relative z-0 flex flex-col items-center justify-center text-center px-10"
-            >
-              {/* 1. 상단 영문 이름 */}
-              <p className="text-xs tracking-[0.4em] text-rose-400 mb-6 font-medium">
-                SANGYEOP & JINSOL
-              </p>
-              {/* 2. 메인 문구 */}
-              <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug">
-                We are<br />
-                <span className="italic font-light">Getting Married!</span>
-              </h1>
-              {/* 3. 장식용 선 */}
-              <div className="w-[80px] h-[1px] bg-gray-300 mt-10" />
-            </motion.div>
-
-
-            {/* 👇 🌟 2. 물리적 좌우 분할 커튼 🌟 👇 */}
-            
-            {/* B. 왼쪽 커튼 패널 (레이스 포함) */}
+            {/* 1. 하얀색 좌우 커튼 (z-10) */}
             <motion.div
               variants={curtainLeftVariants}
               initial="initial"
               animate="animate"
               exit="exit"
-              // 👇 Tailwind로 하얀 커튼 질감과 오른쪽 경계선에 레이스 효과 추가 👇
               className="absolute top-0 left-0 bottom-0 w-1/2 bg-white z-10 shadow-[5px_0_30px_rgba(0,0,0,0.05)]"
             >
-              {/* 레이스 효과 (오른쪽 경계선) */}
               <div className="absolute top-0 right-0 bottom-0 w-[20px] h-full" style={{
                 backgroundImage: 'repeating-radial-gradient(circle, #e2e8f0, #e2e8f0 2px, transparent 2px, transparent 15px)',
                 backgroundSize: '15px 15px',
@@ -231,22 +202,37 @@ export default function WeddingInvitation() {
               }} />
             </motion.div>
 
-            {/* C. 오른쪽 커튼 패널 (레이스 포함) */}
             <motion.div
               variants={curtainRightVariants}
               initial="initial"
               animate="animate"
               exit="exit"
-              // 👇 Tailwind로 하얀 커튼 질감과 왼쪽 경계선에 레이스 효과 추가 👇
               className="absolute top-0 right-0 bottom-0 w-1/2 bg-white z-10 shadow-[-5px_0_30px_rgba(0,0,0,0.05)]"
             >
-              {/* 레이스 효과 (왼쪽 경계선) */}
               <div className="absolute top-0 left-0 bottom-0 w-[20px] h-full" style={{
                 backgroundImage: 'repeating-radial-gradient(circle, #e2e8f0, #e2e8f0 2px, transparent 2px, transparent 15px)',
                 backgroundSize: '15px 15px',
                 backgroundPosition: 'center center',
                 borderLeft: '1px solid #f1f5f9'
               }} />
+            </motion.div>
+
+            {/* 2. 커튼 위에 뜨는 글자 (z-20으로 끌어올림!) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }} // 커튼 열릴 때 글자가 살짝 커지면서 우아하게 사라짐
+              transition={{ duration: 1.0, delay: 0.3 }}
+              className="relative z-20 flex flex-col items-center justify-center text-center px-10 pointer-events-none"
+            >
+              <p className="text-xs tracking-[0.4em] text-rose-400 mb-6 font-medium">
+                SANGYEOP & JINSOL
+              </p>
+              <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug">
+                We are<br />
+                <span className="italic font-light">Getting Married!</span>
+              </h1>
+              <div className="w-[80px] h-[1px] bg-gray-300 mt-10 mx-auto" />
             </motion.div>
 
           </motion.div>
