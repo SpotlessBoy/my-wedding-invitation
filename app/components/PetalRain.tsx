@@ -109,7 +109,7 @@ export default function PetalRain() {
       });
     }
     // 터치 중 스크롤 방지
-    if (e.cancelable) e.preventDefault();
+    // if (e.cancelable) e.preventDefault();
   };
 
   const handleTouchEnd = () => {
@@ -128,7 +128,7 @@ export default function PetalRain() {
       onTouchStart={handleTouchMove}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      style={{ touchAction: 'none' }} // 브라우저 기본 터치 동작(스크롤 등) 방지
+      //style={{ touchAction: 'none' }} // 브라우저 기본 터치 동작(스크롤 등) 방지
     >
       {petals.map((petal) => {
         // 터치 여부에 따라 꽃잎의 애니메이션 목표값(x, y)을 동적으로 결정합니다.
@@ -137,58 +137,52 @@ export default function PetalRain() {
 
         return (
           // 👇 1. 낙하(y)와 투명도(opacity)만 담당하는 부모 레이어 (이동이 끝나면 즉시 삭제) 👇
+          // 👇 1. 부모 레이어 (떨어지는 동작과 흩뿌려지는 동작만 담당) 👇
           <motion.div
             key={petal.id}
             initial={{ opacity: 0, y: -50, x: petal.x }}
             animate={
               touchPosition
                 ? {
-                    x: touchPosition.x + (Math.random() - 0.5) * 20,
-                    y: animationYTarget,
+                    // 터치 중: 손가락 위치로 부드럽게 모여듭니다
+                    x: touchPosition.x + (Math.random() - 0.5) * 50,
+                    y: touchPosition.y + (Math.random() - 0.5) * 50,
                     opacity: 1,
-                    transition: { type: 'spring', stiffness: 70, damping: 10, mass: 0.5 }
+                    transition: { type: 'spring', stiffness: 50, damping: 15 } // 쫀쫀한 자석 효과
                   }
                 : {
+                    // 터치 뗐을 때: 모여있던 그 자리에서 다시 바닥(120vh)을 향해 흩날리며 떨어집니다!
                     y: '120vh',
-                    opacity: [0, petal.baseOpacity, petal.baseOpacity, 0],
-                    transition: { duration: petal.fallSpeed, ease: 'linear' }
+                    opacity: petal.baseOpacity, // 0으로 리셋되지 않고 원래의 반투명도로 부드럽게 돌아감
+                    transition: { 
+                      y: { duration: petal.fallSpeed, ease: 'linear' }, 
+                      opacity: { duration: 1 } 
+                    }
                   }
             }
             onAnimationComplete={() => {
-              // 부모에는 '무한 반복'이 없으므로, 바닥에 닿으면 정확히 여기서 즉시 삭제됩니다!
               if (!touchPosition) removePetal(petal.id);
             }}
             className="absolute"
             style={{ width: petal.size, height: petal.size, pointerEvents: 'none', zIndex: Math.floor(petal.size) }}
           >
-            
-            {/* 👇 2. 제자리에서 흔들림과 회전만 담당하는 자식 레이어 (무한 반복) 👇 */}
+            {/* 👇 2. 자식 레이어 (무한 반복되는 회전과 흔들림만 담당) 👇 */}
             <motion.div
-              initial={{ scale: 0, rotate: petal.rotate, skewX: 0, x: 0 }}
-              animate={
-                touchPosition
-                  ? { 
-                      scale: 1, rotate: petal.rotate + 360, skewX: 0, x: 0,
-                      transition: { type: 'spring' } 
-                    }
-                  : {
-                      scale: 1, 
-                      rotate: petal.rotate + 360,
-                      skewX: [0, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15, 0],
-                      x: [0, petal.flutterAmp, -petal.flutterAmp, 0], // 부모 위치를 기준으로 좌우로만 흔들림
-                      transition: {
-                        scale: { duration: 0.5 },
-                        rotate: { duration: petal.fallSpeed, ease: 'linear', repeat: Infinity },
-                        skewX: { duration: 3 + Math.random() * 2, ease: 'easeInOut', repeat: Infinity, repeatType: 'reverse' },
-                        x: { duration: 3 + Math.random() * 2, ease: 'easeInOut', repeat: Infinity, repeatType: 'reverse' }
-                      }
-                    }
-              }
+              animate={{
+                rotate: petal.rotate + 360,
+                // 터치 중엔 흔들림을 멈추고, 손을 떼면 다시 좌우로 살랑거립니다
+                x: touchPosition ? 0 : [0, petal.flutterAmp, -petal.flutterAmp, 0],
+                skewX: touchPosition ? 0 : [0, 15, -15, 0],
+              }}
+              transition={{
+                rotate: { duration: petal.fallSpeed, ease: 'linear', repeat: Infinity },
+                x: { duration: 3 + Math.random() * 2, ease: 'easeInOut', repeat: Infinity },
+                skewX: { duration: 3 + Math.random() * 2, ease: 'easeInOut', repeat: Infinity },
+              }}
               style={{ width: '100%', height: '100%' }}
             >
               <VintagePetalSVG color={petal.color} />
             </motion.div>
-
           </motion.div>
         );
       })}

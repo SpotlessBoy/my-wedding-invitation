@@ -27,7 +27,7 @@ const curtainLeftVariants = {
   animate: { x: 0 },
   exit: { 
     x: '-100%', 
-    transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 1.0 } 
+    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 0.3 } 
   },
 };
 
@@ -36,7 +36,7 @@ const curtainRightVariants = {
   animate: { x: 0 },
   exit: { 
     x: '100%', 
-    transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 1.0 } 
+    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 0.3 } 
   },
 };
 
@@ -143,14 +143,14 @@ export default function WeddingInvitation() {
     };
   }, [selectedPhotoIndex, showMapImage]);
 
-// 👇 2. 인트로 타이머 (2.8초 뒤에 커튼을 엽니다) 및 스크롤 강제 잠금 👇
+// 👇 2. 인트로 타이머 (1.5초 뒤에 커튼을 엽니다) 및 스크롤 강제 잠금 👇
   useEffect(() => {
     if (showIntro) {
       document.body.style.overflow = 'hidden'; // 인트로 재생 중엔 스크롤 불가
       
       const timer = setTimeout(() => {
-        setShowIntro(false); // 2.8초 뒤에 인트로 종료
-      }, 2800);
+        setShowIntro(false); // 1.5초 뒤에 인트로 종료
+      }, 1500);
       
       return () => clearTimeout(timer);
     } else {
@@ -183,7 +183,7 @@ export default function WeddingInvitation() {
           <motion.div
             key="intro-splash"
             className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden touch-none"
-            exit={{ backgroundColor: "rgba(255,255,255,0)", transition: { delay: 1.5 } }} // 커튼이 다 열리면 전체 배경도 투명하게 사라짐
+            exit={{ backgroundColor: "rgba(255,255,255,0)", transition: { delay: 0.8 } }} // 커튼이 다 열리면 전체 배경도 투명하게 사라짐
           >
 
             {/* 1. 하얀색 좌우 커튼 (z-10) */}
