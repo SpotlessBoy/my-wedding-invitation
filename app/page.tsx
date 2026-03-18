@@ -440,19 +440,24 @@ export default function WeddingInvitation() {
                   key={photo.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: "0px 0px -50px 0px" }} // 여기도 떨림 방지 마진 추가!
                   transition={{ duration: 0.5, delay: index * 0.05 }}
-                  // 👇 끝에 break-inside-avoid 와 mb-3 을 추가했습니다 👇
-                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95 break-inside-avoid mb-3`}
+                  // 👇 inline-block 을 추가하여 WebKit의 단락 계산 버그를 강제로 고정합니다 👇
+                  className={`relative inline-block w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transition-transform active:scale-95 break-inside-avoid mb-3`}
+                  // 👇 iOS 사파리 및 카카오톡 브라우저의 악성 터치 반응을 모두 셧다운시킵니다 👇
+                  style={{
+                    WebkitTouchCallout: 'none',       // 꾹 눌렀을 때 뜨는 '이미지 저장' 팝업 완벽 차단
+                    WebkitUserSelect: 'none',         // 텍스트/이미지 선택 돋보기 차단
+                    WebkitTapHighlightColor: 'transparent', // 터치 시 번쩍이는 회색/파란색 음영 차단
+                  }}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
                 >
                   <Image
                     src={photo.src}
                     alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                     fill
-                    quality={50} // 썸네일은 용량을 위해 강하게 압축
-					// 👇 이 마법의 한 줄을 추가합니다 (인덱스가 6 미만, 즉 첫 6장만 미리 로딩) 👇
-                    priority={index < 6}
+                    quality={50}
+                    priority={index < 6} // 아까 적용한 상위 6장 미리 로딩
                     className="object-cover hover:scale-105 transition-transform duration-500"
                     sizes="(max-w: 480px) 50vw, 240px"
                   />
@@ -587,33 +592,38 @@ export default function WeddingInvitation() {
             </button>
 
             {/* 메인 이미지 (스와이프 기능 포함) */}
-            <motion.div 
-              key={selectedPhotoIndex}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-[480px] h-[75dvh] touch-pan-x"
-              drag="x" // 좌우 스와이프 활성화
-              dragConstraints={{ left: 0, right: 0 }} // 드래그 탄성 제한
-			  dragDirectionLock // 수직/수평 드래그 방향을 엄격하게 고정
-              onDragEnd={(e, { offset }) => {
-                // 스와이프 감도 (50px 이상 밀면 넘어감)
-                if (offset.x < -50) handleNextPhoto(e as any);
-                else if (offset.x > 50) handlePrevPhoto(e as any);
-              }}
-              onClick={(e) => e.stopPropagation()} // 사진 자체를 클릭했을 땐 안 닫히게 방어
-            >
-              <Image
-                src={galleryPhotos[selectedPhotoIndex].src}
-                alt={`확대된 웨딩 사진 ${selectedPhotoIndex + 1}`}
-                fill
-                quality={90} // 확대 사진은 고화질로 렌더링
-                priority
-                className="object-contain" // 비율이 깨지지 않게 전체가 다 보이도록 설정
-                sizes="100vw"
-              />
-            </motion.div>
+            {/* 👇 사진 전환 시 깜빡임(Flicker)을 완벽히 방지하는 스와이프 컨테이너 👇 */}
+            <div className="relative w-full max-w-[480px] h-[75dvh] flex items-center justify-center overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={selectedPhotoIndex}
+                  // x축 이동 거리를 줄이고, 약간의 스케일 변화를 주어 인스타그램처럼 부드럽게 넘깁니다
+                  initial={{ opacity: 0, scale: 0.98, x: 20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.98, x: -20 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }} // 통통 튀는 spring 대신 차분한 easeInOut 적용
+                  className="absolute inset-0 touch-pan-x"
+                  drag="x" 
+                  dragConstraints={{ left: 0, right: 0 }} 
+                  dragDirectionLock 
+                  onDragEnd={(e, { offset }) => {
+                    if (offset.x < -50) handleNextPhoto(e as any);
+                    else if (offset.x > 50) handlePrevPhoto(e as any);
+                  }}
+                  onClick={(e) => e.stopPropagation()} 
+                >
+                  <Image
+                    src={galleryPhotos[selectedPhotoIndex].src}
+                    alt={`확대된 웨딩 사진 ${selectedPhotoIndex + 1}`}
+                    fill
+                    quality={90}
+                    priority 
+                    className="object-contain" 
+                    sizes="100vw"
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
             {/* 좌우 네비게이션 버튼 및 카운터 */}
             <div className="absolute bottom-10 inset-x-0 flex items-center justify-between px-8 z-[210]">
