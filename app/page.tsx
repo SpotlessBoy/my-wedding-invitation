@@ -442,14 +442,17 @@ export default function WeddingInvitation() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  // 👇 끝에 break-inside-avoid 와 mb-3 을 추가했습니다 👇
+                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95 break-inside-avoid mb-3`}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
                 >
                   <Image
                     src={photo.src}
                     alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                     fill
-                    quality={60} // 썸네일은 용량을 위해 강하게 압축
+                    quality={50} // 썸네일은 용량을 위해 강하게 압축
+					// 👇 이 마법의 한 줄을 추가합니다 (인덱스가 6 미만, 즉 첫 6장만 미리 로딩) 👇
+                    priority={index < 6}
                     className="object-cover hover:scale-105 transition-transform duration-500"
                     sizes="(max-w: 480px) 50vw, 240px"
                   />
