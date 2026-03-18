@@ -10,10 +10,11 @@ import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
 // 부드럽게 나타나는 애니메이션 컴포넌트
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
-    initial={{ opacity: 0, y: 50 }} // 이동 거리를 살짝 늘려주면 모션이 더 극적으로 보입니다
+    initial={{ opacity: 0, y: 20 }} // 50은 화면 밖으로 튕겨 나가니, 부드러운 20px로 다듬어줍니다
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: false, amount: 0.1 }} // once를 false로 변경하고, 화면에 10% 보일 때 작동하도록 변경
-    transition={{ duration: 0.8, delay, ease: 'easeOut' }}
+    // 👇 once: false로 반복을 살리고, amount를 0으로 낮춰 덜덜거림을 차단합니다 👇
+    viewport={{ once: false, amount: 0 }} 
+    transition={{ duration: 0.6, delay, ease: 'easeOut' }} // 거리가 짧아졌으니 속도도 0.6초로 텐션감 있게!
   >
     {children}
   </motion.div>
