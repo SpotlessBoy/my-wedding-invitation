@@ -184,18 +184,28 @@ export default function WeddingInvitation() {
   
   // 갤러리 모달 오픈 시 배경 스크롤 및 브라우저 UI 바운스 완벽 차단
   useEffect(() => {
-    if (selectedPhotoIndex !== null || showMapImage) {
+    // 👇 1. 브라우저의 네이티브 스크롤(주소창 끌어내림)을 강제로 막는 방어 함수 👇
+    const preventDefault = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    if (selectedPhotoIndex !== null || showMapImage || showIntro) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none'; // 브라우저 기본 터치 액션 무시
+      // passive: false로 설정하여 방어 함수를 강력하게 적용합니다.
+      document.addEventListener('touchmove', preventDefault, { passive: false });
     } else {
       document.body.style.overflow = 'unset';
       document.body.style.touchAction = 'auto';
+      document.removeEventListener('touchmove', preventDefault);
     }
+    
     return () => {
       document.body.style.overflow = 'unset';
       document.body.style.touchAction = 'auto';
+      document.removeEventListener('touchmove', preventDefault);
     };
-  }, [selectedPhotoIndex, showMapImage]);
+  }, [selectedPhotoIndex, showMapImage, showIntro]);
 
 // 👇 2. 인트로 타이머 (1.5초 뒤에 커튼을 엽니다) 및 스크롤 강제 잠금 👇
   useEffect(() => {
@@ -555,12 +565,13 @@ export default function WeddingInvitation() {
 			{/* 👇 새로 추가되는 네비게이션 연동 섹션 👇 */}
             <div className="mt-8 pt-8 border-t border-gray-100 text-left">
               <h3 className="font-bold text-gray-800 mb-1 text-base">네비게이션</h3>
-              <p className="text-sm text-gray-500 mb-5">원하는 앱을 선택하시면 길안내가 시작합니다.</p>
+              <p className="text-sm text-gray-500 mb-5">원하는 앱을 선택하시면 길 안내가 시작됩니다.</p>
               
               <div className="flex justify-between gap-2">
                 {/* 1. 네이버 지도 (앱 호출 공식 URL) */}
+                {/* 👇 수정 후: 템플릿 리터럴(백틱 `)과 encodeURIComponent 적용, menu=route 변경 👇 */}
                 <button 
-                  onClick={() => window.open('https://app.map.naver.com/launchApp/?version=11&menu=navigation&goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003')}
+                  onClick={() => window.open(`https://app.map.naver.com/launchApp/?version=11&menu=route&goalname=${encodeURIComponent('호텔 인터불고 엑스코')}&goalx=128.611285546387&goaly=35.9069985378003`)}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
                   <Image src="/images/icon-naver.png" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
@@ -797,7 +808,11 @@ export default function WeddingInvitation() {
 
             {/* 메인 이미지 (스와이프 기능 포함) */}
             {/* 👇 사진 전환 시 깜빡임(Flicker)을 완벽히 방지하는 스와이프 컨테이너 👇 */}
-            <div className="relative w-full max-w-[480px] h-[75dvh] flex items-center justify-center overflow-hidden">
+            {/* 👇 수정 후: h-[75dvh]를 제거하고, style에 절대 변하지 않는 커스텀 vh를 적용합니다! 👇 */}
+            <div 
+              className="relative w-full max-w-[480px] flex items-center justify-center overflow-hidden"
+              style={{ height: 'calc(var(--vh, 1vh) * 75)' }}
+            >
               <AnimatePresence mode="wait">
                 <motion.div 
                   key={selectedPhotoIndex}
