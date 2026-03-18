@@ -2,10 +2,19 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
 import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
+
+
+const brightWeddingColors = ['#FFD1DC', '#FFFFE0', '#FFDAB9', '#FFFFF0', '#FFB6C1', '#FFF8DC'];
+// 하트가 아닌 진짜 '꽃잎(Teardrop)' 모양 SVG
+const RealPetalSVG = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(1px 2px 3px rgba(0,0,0,0.15))' }}>
+    <path d="M12 2C7 2 3 7 3 12C3 18 12 22 12 22C12 22 21 18 21 12C21 7 17 2 12 2Z" />
+  </svg>
+);
 
 // 부드럽게 나타나는 애니메이션 컴포넌트
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
@@ -47,6 +56,51 @@ export default function WeddingInvitation() {
   
   // 👇 1. 인트로 스플래시 상태 추가 (처음엔 무조건 true로 켜둠) 👇
   const [showIntro, setShowIntro] = useState(true);
+  
+
+// 👇 1. 하트 꽃잎 상태를 만듭니다 (처음엔 빈 배열로 두어 서버를 안심시킵니다) 👇
+  const [heartPetals, setHeartPetals] = useState<any[]>([]);
+
+  // 👇 2. 브라우저가 화면을 켠 직후(Client-side)에 랜덤 값을 계산합니다 👇
+  useEffect(() => {
+    const petals = [];
+    const count = 60; // 테두리를 감쌀 꽃잎 개수
+    for (let i = 0; i < count; i++) {
+      const t = (i / count) * Math.PI * 2;
+      // 하트 모양을 그리는 수학 공식 (x, y 좌표)
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      
+      petals.push({
+        id: i,
+        x: x * 10, // 가로 크기 확장
+        y: y * 10 - 15, // 세로 크기 확장 및 글자 중앙에 맞춤
+        rotation: Math.random() * 360,
+        scale: 0.6 + Math.random() * 0.6,
+        color: brightWeddingColors[Math.floor(Math.random() * brightWeddingColors.length)],
+        // 나중에 바람에 날아갈(흩어질) 도착지 좌표
+        scatterX: (Math.random() - 0.5) * 800, 
+        scatterY: (Math.random() - 0.5) * 800,
+        scatterRot: (Math.random() - 0.5) * 720,
+        delay: Math.random() * 0.5, // 뿅! 하고 나타나는 시간차
+      });
+    }
+    setHeartPetals(petals); // 계산이 끝나면 상태에 집어넣어 화면에 그립니다!
+  }, []);
+  // 👆 하트 좌표 계산 끝 👆
+   
+  
+  // 👇 2. 하트 흩날리는 걸 감상할 수 있게 타이머를 2.8초(2800)로 세팅해주세요 👇
+  useEffect(() => {
+    if (showIntro) {
+      document.body.style.overflow = 'hidden'; 
+      const timer = setTimeout(() => setShowIntro(false), 2800);
+      return () => clearTimeout(timer);
+    } else {
+      document.body.style.overflow = 'unset'; 
+    }
+  }, [showIntro]);
+  
   
   // 👇 새로 추가할 갤러리용 상태 및 데이터 👇
   const [showAllGallery, setShowAllGallery] = useState(false);
@@ -177,64 +231,74 @@ export default function WeddingInvitation() {
 	>
 	
 	
-	{/* 🌟 오프닝 커튼 (인트로 스플래시) 🌟 */}
+	{/* 🌟 진짜 꽃잎들이 하트 모양 테두리를 이루는 오프닝 인트로 (통째로 덮어쓰기) 🌟 */}
       <AnimatePresence>
         {showIntro && (
           <motion.div
             key="intro-splash"
             className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden touch-none"
-            exit={{ backgroundColor: "rgba(255,255,255,0)", transition: { delay: 0.8 } }} // 커튼이 다 열리면 전체 배경도 투명하게 사라짐
+            exit={{ backgroundColor: "rgba(255,255,255,0)", transition: { delay: 0.8 } }} 
           >
+            {/* 하얀색 좌우 커튼 (기존 코드 동일) */}
+            <motion.div variants={curtainLeftVariants} initial="initial" animate="animate" exit="exit" className="absolute top-0 left-0 bottom-0 w-1/2 bg-white z-10 shadow-[5px_0_30px_rgba(0,0,0,0.05)]" />
+            <motion.div variants={curtainRightVariants} initial="initial" animate="animate" exit="exit" className="absolute top-0 right-0 bottom-0 w-1/2 bg-white z-10 shadow-[-5px_0_30px_rgba(0,0,0,0.05)]" />
 
-            {/* 1. 하얀색 좌우 커튼 (z-10) */}
-            <motion.div
-              variants={curtainLeftVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="absolute top-0 left-0 bottom-0 w-1/2 bg-white z-10 shadow-[5px_0_30px_rgba(0,0,0,0.05)]"
-            >
-              <div className="absolute top-0 right-0 bottom-0 w-[20px] h-full" style={{
-                backgroundImage: 'repeating-radial-gradient(circle, #e2e8f0, #e2e8f0 2px, transparent 2px, transparent 15px)',
-                backgroundSize: '15px 15px',
-                backgroundPosition: 'center center',
-                borderRight: '1px solid #f1f5f9'
-              }} />
+            {/* 👇 1. 커튼 위에 뜨는 글자와 흩날리는 하트 꽃잎 (z-20) 👇 */}
+            <motion.div className="relative z-20 flex items-center justify-center pointer-events-none">
+              
+              {/* ✨ 디테일 1: 글자와 커튼 갈라지는 선이 난잡해 보이지 않도록 뒤에 뽀얀 블러 방어막 전개 ✨ */}
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="absolute w-[300px] h-[250px] bg-white/70 rounded-full" 
+                style={{ filter: 'blur(30px)' }} 
+              />
+
+              {/* ✨ 디테일 2: 형형색색 진짜 꽃잎들이 그리는 하트 테두리 ✨ */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {heartPetals.map((p) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }} // 글자 가운데서 뿜어져 나옴
+                    animate={{ 
+                      opacity: 1, scale: p.scale, x: p.x, y: p.y, rotate: p.rotation,
+                      transition: { duration: 0.8, delay: 0.3 + p.delay, type: 'spring', damping: 12 }
+                    }}
+                    exit={{ 
+                      // 👇 🌟 최종 수정 포인트 🌟 👇
+                      // 동그라미로 뭉개지지 않도록, opacity를 부드럽게 배열로 주고, 스케일도 덜 줄입니다. 
+                      opacity: [1, 0.5, 0], // 깜빡이지 않고 서서히 투명해짐
+                      scale: 0.5, // 덜 축소시켜 Teardrop 모양 유지
+                      
+                      x: p.x + p.scatterX, y: p.y + p.scatterY, rotate: p.rotation + p.scatterRot, // 🌬️ 바람에 촤라락 흩날리는 위치로 이동!
+                      transition: { duration: 1.5, ease: "easeOut" } // 날아가는 속도를 1.5초로 늘려 Teardrop 모양이 서서히 흩어지는 디테일을 감상!
+                    }}
+                    className="absolute w-6 h-6"
+                  >
+                    {/* 👇 Teardrop 모양의 진짜 꽃잎 SVG 👇 */}
+                    <RealPetalSVG color={p.color} />
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* ✨ 디테일 3: 중앙 텍스트 영역 ✨ */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                // exit: 글자도 커튼 열리는 속도(0.8초)에 맞춰 0.8초 뒤에 서서히 사라짐
+                exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)', transition: { duration: 0.8, delay: 0.8 } }}
+                transition={{ duration: 1.0, delay: 0.3 }}
+                className="relative z-30 flex flex-col items-center justify-center text-center px-10"
+              >
+                <p className="text-xs tracking-[0.4em] text-rose-400 mb-6 font-medium drop-shadow-md">
+                  SANGYEOP & JINSOL
+                </p>
+                <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug drop-shadow-md">
+                  We are<br />
+                  <span className="italic font-light">Getting Married!</span>
+                </h1>
+                <div className="w-[80px] h-[1px] bg-gray-400 mt-10 mx-auto" />
+              </motion.div>
+
             </motion.div>
-
-            <motion.div
-              variants={curtainRightVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="absolute top-0 right-0 bottom-0 w-1/2 bg-white z-10 shadow-[-5px_0_30px_rgba(0,0,0,0.05)]"
-            >
-              <div className="absolute top-0 left-0 bottom-0 w-[20px] h-full" style={{
-                backgroundImage: 'repeating-radial-gradient(circle, #e2e8f0, #e2e8f0 2px, transparent 2px, transparent 15px)',
-                backgroundSize: '15px 15px',
-                backgroundPosition: 'center center',
-                borderLeft: '1px solid #f1f5f9'
-              }} />
-            </motion.div>
-
-            {/* 2. 커튼 위에 뜨는 글자 (z-20으로 끌어올림!) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }} // 커튼 열릴 때 글자가 살짝 커지면서 우아하게 사라짐
-              transition={{ duration: 1.0, delay: 0.3 }}
-              className="relative z-20 flex flex-col items-center justify-center text-center px-10 pointer-events-none"
-            >
-              <p className="text-xs tracking-[0.4em] text-rose-400 mb-6 font-medium">
-                SANGYEOP & JINSOL
-              </p>
-              <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug">
-                We are<br />
-                <span className="italic font-light">Getting Married!</span>
-              </h1>
-              <div className="w-[80px] h-[1px] bg-gray-300 mt-10 mx-auto" />
-            </motion.div>
-
           </motion.div>
         )}
       </AnimatePresence>
