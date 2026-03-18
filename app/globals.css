@@ -19,10 +19,14 @@
   }
 }
 
+/* 1. 사파리 엔진을 굴복시키기 위해 html과 body를 동시에 묶어서 락(Lock)을 겁니다 */
+html, body {
+  overscroll-behavior: none; /* y축뿐만 아니라 전체 바운스 차단 */
+  background-color: var(--background); /* 바운스 틈새가 생겨도 흰색으로 메워버림 */
+}
+
+/* 2. 나머지 기본 스타일은 body에만 남겨둡니다 */
 body {
-  background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-   /* 세로 방향의 오버스크롤 바운스 효과를 완전히 차단합니다 */
-  overscroll-behavior-y: none;
 }

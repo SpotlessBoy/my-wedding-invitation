@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
@@ -24,6 +24,8 @@ export default function WeddingInvitation() {
   const [openAccount, setOpenAccount] = useState<'groom' | 'bride' | null>(null);
   const [showMapImage, setShowMapImage] = useState(false); // 약도 이미지 팝업용
   
+  // 👇 1. 인트로 스플래시 상태 추가 (처음엔 무조건 true로 켜둠) 👇
+  const [showIntro, setShowIntro] = useState(true);
   
   // 👇 새로 추가할 갤러리용 상태 및 데이터 👇
   const [showAllGallery, setShowAllGallery] = useState(false);
@@ -120,6 +122,21 @@ export default function WeddingInvitation() {
     };
   }, [selectedPhotoIndex, showMapImage]);
 
+// 👇 2. 인트로 타이머 (2.8초 뒤에 커튼을 엽니다) 및 스크롤 강제 잠금 👇
+  useEffect(() => {
+    if (showIntro) {
+      document.body.style.overflow = 'hidden'; // 인트로 재생 중엔 스크롤 불가
+      
+      const timer = setTimeout(() => {
+        setShowIntro(false); // 2.8초 뒤에 인트로 종료
+      }, 2800);
+      
+      return () => clearTimeout(timer);
+    } else {
+      document.body.style.overflow = 'unset'; // 인트로 끝나면 스크롤 해제
+    }
+  }, [showIntro]);
+
 
   // 2026년 6월 달력 데이터 (6월 1일은 월요일)
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
@@ -137,6 +154,53 @@ export default function WeddingInvitation() {
 		className="min-h-screen bg-[#FDFDFD] text-[#333333] font-serif selection:bg-rose-100 relative select-none [&_img]:pointer-events-none"
 		onContextMenu={(e) => e.preventDefault()} // 우클릭 방지
 	>
+	
+	
+	{/* 🌟 새로 추가되는 오프닝 커튼 (인트로 스플래시) 🌟 */}
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            key="intro-splash"
+            // 입장할 땐 가만히 있고, 퇴장할 때(exit) 위로 스르륵(-100%) 커튼처럼 열립니다
+            exit={{ opacity: 0, y: "-100%" }}
+            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }} // 아주 고급스러운 가속/감속 곡선
+            className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-white touch-none"
+          >
+            {/* 1. 상단 영문 이름 (서서히 나타남) */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-xs tracking-[0.4em] text-rose-400 mb-6 font-medium"
+            >
+              SANGYEOP & JINSOL
+            </motion.p>
+
+            {/* 2. 메인 문구 (글자가 살짝 커지면서 극적으로 등장) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+              className="text-center"
+            >
+              <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug">
+                We are<br />
+                <span className="italic font-light">Getting Married!</span>
+              </h1>
+            </motion.div>
+
+            {/* 3. 우아하게 퍼져나가는 장식용 선 */}
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: "80px", opacity: 1 }}
+              transition={{ duration: 1, delay: 1.2, ease: "easeInOut" }}
+              className="h-[1px] bg-gray-300 mt-10"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* 🌟 인트로 스플래시 끝 🌟 */}
+	
 
       {/* 모바일 화면 중앙 정렬을 위한 컨테이너 */}
       <div className="max-w-[480px] mx-auto bg-white shadow-[0_0_20px_rgba(0,0,0,0.05)] relative z-10 min-h-screen">
@@ -497,7 +561,17 @@ export default function WeddingInvitation() {
               onClick={() => setShowAllGallery(!showAllGallery)}
               className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-50 text-gray-600 rounded-full font-medium text-[15px] border border-gray-200 transition-colors active:bg-gray-100 mt-4"
             >
-              {showAllGallery ? '접기' : '더 보기'}
+              {showAllGallery ? (
+                <>
+                  <ChevronUp size={18} className="animate-pulse text-gray-400" />
+                  접기
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={18} className="animate-pulse text-gray-400" />
+                  더 보기
+                </>
+              )}
             </button>
             
           </FadeIn>
@@ -680,7 +754,18 @@ export default function WeddingInvitation() {
 
 
       {/* 약도 이미지 팝업 (모달) */}
-      <AnimatePresence>
+      {/* 👇 1. 약도 이미지를 백그라운드에서 몰래 미리 다운로드(Preload) 해두는 투명 망토 영역 👇 */}
+      <div className="hidden">
+        <Image 
+          src="/images/way_to_hall.jpg?v=2" 
+          alt="약도 사전로딩" 
+          width={10} 
+          height={10} 
+          priority 
+        />
+      </div>
+	  
+	  <AnimatePresence>
         {showMapImage && (
           <motion.div
             initial={{ opacity: 0 }}
