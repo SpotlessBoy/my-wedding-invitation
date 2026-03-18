@@ -32,7 +32,7 @@ export default function WeddingInvitation() {
   // aspect 속성을 다르게 주어 가로/세로가 자연스럽게 섞이는 메이슨리 레이아웃을 만듭니다.
   const galleryPhotos = Array.from({ length: 20 }).map((_, i) => ({
     id: i,
-    src: `/images/gallery/${i + 1}.jpg`, // public/images/gallery/ 폴더에 1.jpg~20.jpg 저장 필요
+    src: `/images/gallery/${i + 1}.jpg?v=2`, // public/images/gallery/ 폴더에 1.jpg~20.jpg 저장 필요
     aspect: i % 4 === 0 ? 'aspect-[4/3]' : i % 7 === 0 ? 'aspect-square' : 'aspect-[3/4]', 
   }));
 
@@ -153,7 +153,7 @@ export default function WeddingInvitation() {
 		>
           <div className="absolute inset-0">
             <Image
-              src="/images/main.jpg"
+              src="/images/main.jpg?v=2"
               alt="메인 웨딩 사진"
               fill
               className="object-cover object-center"
@@ -224,7 +224,7 @@ export default function WeddingInvitation() {
               className="relative w-[100%] aspect-[4/3] mx-auto mb-12 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
-                src="/images/sub_main3.jpg"
+                src="/images/sub_main3.jpg?v=2"
                 alt="신랑 신부 사진"
                 fill
                 quality={80} // 스크롤 시 나타나는 서브 사진 압축률 설정
@@ -317,7 +317,7 @@ export default function WeddingInvitation() {
               className="relative w-[100%] aspect-[3/2] mx-auto mb-10 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
             >
               <Image
-                src="/images/sub_date.jpg" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
+                src="/images/sub_date.jpg?v=2" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
                 alt="골목길 스냅이에욥"
                 fill
                 quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
@@ -360,7 +360,7 @@ export default function WeddingInvitation() {
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">LOCATION</h2>
             <div className="relative w-full aspect-[20/9] rounded-2xl overflow-hidden mb-10 shadow-sm mx-auto">
               <Image
-                src="/images/wedding_hall.jpg"
+                src="/images/wedding_hall.jpg?v=2"
                 priority // 지도를 보는 섹션은 정보성이 강하므로 미리 로딩
                 quality={80}
                 alt="대구 인터불고 엑스코 그랑파티오 홀 전경"
@@ -656,7 +656,7 @@ export default function WeddingInvitation() {
               className="relative w-full max-w-[400px] aspect-[3/4] bg-white rounded-2xl overflow-hidden shadow-2xl"
             >
               <Image
-                src="/images/way_to_hall.jpg" 
+                src="/images/way_to_hall.jpg?v=2" 
                 alt="오시는 길 약도"
                 fill
                 quality={70} // 팝업으로 뜨는 텍스트 위주 약도는 70%로 강하게 압축하여 번쩍임(Flash) 현상 최소화
