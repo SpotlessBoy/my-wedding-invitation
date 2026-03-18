@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map } from 'lucide-react';
+import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
@@ -22,6 +22,34 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function WeddingInvitation() {
   const [openAccount, setOpenAccount] = useState<'groom' | 'bride' | null>(null);
   const [showMapImage, setShowMapImage] = useState(false); // 약도 이미지 팝업용
+  
+  
+  // 👇 새로 추가할 갤러리용 상태 및 데이터 👇
+  const [showAllGallery, setShowAllGallery] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+
+  // 갤러리 이미지 데이터 (총 20장 예시)
+  // aspect 속성을 다르게 주어 가로/세로가 자연스럽게 섞이는 메이슨리 레이아웃을 만듭니다.
+  const galleryPhotos = Array.from({ length: 20 }).map((_, i) => ({
+    id: i,
+    src: `/images/gallery/${i + 1}.jpg`, // public/images/gallery/ 폴더에 1.jpg~20.jpg 저장 필요
+    aspect: i % 4 === 0 ? 'aspect-[4/3]' : i % 7 === 0 ? 'aspect-square' : 'aspect-[3/4]', 
+  }));
+
+  const displayedPhotos = showAllGallery ? galleryPhotos : galleryPhotos.slice(0, 6); // 처음엔 6장만 노출
+
+  // 스와이프 및 버튼 넘김 처리 함수
+  const handleNextPhoto = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedPhotoIndex((prev) => (prev === galleryPhotos.length - 1 ? 0 : prev! + 1));
+  };
+  const handlePrevPhoto = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedPhotoIndex((prev) => (prev === 0 ? galleryPhotos.length - 1 : prev! - 1));
+  };
+  // 👆 갤러리용 상태 끝 👆
+  
+  
   
   // D-Day 타이머 상태 관리
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
@@ -380,8 +408,53 @@ export default function WeddingInvitation() {
 			
           </FadeIn>
         </section>
+		
+		
+		{/* 🌟 새로 추가된 5. 갤러리 (GALLERY) 섹션 🌟 */}
+        <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
+          <FadeIn>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">GALLERY</h2>
+            
+            {/* 메이슨리(Masonry) 레이아웃 그리드 */}
+            {/* CSS columns-2를 사용하여 세로로 흐르듯 자연스럽게 빈 공간을 채웁니다 */}
+            <div className="columns-2 gap-3 space-y-3 mb-8">
+              {displayedPhotos.map((photo, index) => (
+                <motion.div
+                  key={photo.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  className={`relative w-full ${photo.aspect} rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  onClick={() => setSelectedPhotoIndex(photo.id)}
+                >
+                  <Image
+                    src={photo.src}
+                    alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
+                    fill
+                    quality={60} // 썸네일은 용량을 위해 강하게 압축
+                    className="object-cover hover:scale-105 transition-transform duration-500"
+                    sizes="(max-w: 480px) 50vw, 240px"
+                  />
+                </motion.div>
+              ))}
+            </div>
 
-        {/* 5. 마음 전하실 곳 섹션 생략 (기존 코드와 동일) */}
+            {/* 더보기 버튼 */}
+            {!showAllGallery && (
+              <button
+                onClick={() => setShowAllGallery(true)}
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-50 text-gray-600 rounded-full font-medium text-[15px] border border-gray-200 transition-colors active:bg-gray-100"
+              >
+                사진 더보기
+              </button>
+            )}
+          </FadeIn>
+        </section>
+		
+		
+
+        {/* 6. 마음 전하실 곳 섹션 생략 (기존 코드와 동일) */}
         <section className="relative z-10 -mt-px py-24 px-8 bg-white">
           {/* ... 기존 계좌번호 코드 동일 ... */}
           <FadeIn>
@@ -474,6 +547,80 @@ export default function WeddingInvitation() {
         </footer>
 
       </div>
+
+
+	  {/* 👇 갤러리 라이트박스 (확대 모달) 👇 */}
+      <AnimatePresence>
+        {selectedPhotoIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedPhotoIndex(null)} // 여백 클릭 시 닫힘
+            className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center touch-none"
+          >
+            {/* 닫기 버튼 */}
+            <button 
+              onClick={() => setSelectedPhotoIndex(null)}
+              className="absolute top-6 right-6 text-white/80 p-2 z-[210] active:scale-90"
+            >
+              <X size={28} strokeWidth={2} />
+            </button>
+
+            {/* 메인 이미지 (스와이프 기능 포함) */}
+            <motion.div 
+              key={selectedPhotoIndex}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-[480px] h-[75svh]"
+              drag="x" // 좌우 스와이프 활성화
+              dragConstraints={{ left: 0, right: 0 }} // 드래그 탄성 제한
+              onDragEnd={(e, { offset }) => {
+                // 스와이프 감도 (50px 이상 밀면 넘어감)
+                if (offset.x < -50) handleNextPhoto(e as any);
+                else if (offset.x > 50) handlePrevPhoto(e as any);
+              }}
+              onClick={(e) => e.stopPropagation()} // 사진 자체를 클릭했을 땐 안 닫히게 방어
+            >
+              <Image
+                src={galleryPhotos[selectedPhotoIndex].src}
+                alt={`확대된 웨딩 사진 ${selectedPhotoIndex + 1}`}
+                fill
+                quality={90} // 확대 사진은 고화질로 렌더링
+                priority
+                className="object-contain" // 비율이 깨지지 않게 전체가 다 보이도록 설정
+                sizes="100vw"
+              />
+            </motion.div>
+
+            {/* 좌우 네비게이션 버튼 및 카운터 */}
+            <div className="absolute bottom-10 inset-x-0 flex items-center justify-between px-8 z-[210]">
+              <button 
+                onClick={handlePrevPhoto}
+                className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md active:bg-white/20"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              
+              <span className="text-white/70 text-sm font-medium tracking-widest">
+                {selectedPhotoIndex + 1} / {galleryPhotos.length}
+              </span>
+
+              <button 
+                onClick={handleNextPhoto}
+                className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md active:bg-white/20"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* 👆 갤러리 라이트박스 끝 👆 */}
+
+
 
       {/* 약도 이미지 팝업 (모달) */}
       <AnimatePresence>
