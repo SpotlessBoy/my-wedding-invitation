@@ -32,7 +32,7 @@ export default function WeddingInvitation() {
   // aspect 속성을 다르게 주어 가로/세로가 자연스럽게 섞이는 메이슨리 레이아웃을 만듭니다.
   const galleryPhotos = Array.from({ length: 20 }).map((_, i) => ({
     id: i,
-    src: `/images/gallery/${i + 1}.jpg?v=2`, // public/images/gallery/ 폴더에 1.jpg~20.jpg 저장 필요
+    src: `/images/gallery/${i + 1}.jpg?v=3`, // public/images/gallery/ 폴더에 1.jpg~20.jpg 저장 필요
     aspect: i % 4 === 0 ? 'aspect-[4/3]' : i % 7 === 0 ? 'aspect-square' : 'aspect-[3/4]', 
   }));
 
@@ -441,7 +441,7 @@ export default function WeddingInvitation() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className={`relative w-full ${photo.aspect} rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
                 >
                   <Image
