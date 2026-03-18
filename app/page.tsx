@@ -458,7 +458,8 @@ export default function WeddingInvitation() {
                     fill
                     quality={50}
                     priority={index < 6} // 아까 적용한 상위 6장 미리 로딩
-                    className="object-cover hover:scale-105 transition-transform duration-500"
+                    // 👇 hover:scale-105 를 과감히 삭제했습니다! 👇
+                    className="object-cover transition-transform duration-500"
                     sizes="(max-w: 480px) 50vw, 240px"
                   />
                 </motion.div>
