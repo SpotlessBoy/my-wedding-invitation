@@ -301,7 +301,7 @@ export default function WeddingInvitation() {
         {/* 메인 커버 뒤에서 공간을 차지해주는 더미 div */}
         {/* 수정 전: h-[100svh] 제거하고 style 추가 */}
         <div 
-          className="relative z-0 shrink-0" 
+          className="relative z-0 shrink-0 pointer-events-none" 
           style={{ height: 'calc(var(--vh, 1vh) * 100)' }} 
           aria-hidden="true" 
         />
