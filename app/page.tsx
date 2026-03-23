@@ -102,6 +102,38 @@ export default function WeddingInvitation() {
   }, [showIntro]);
   
   
+  // 👇 새로 추가할 '사파리 확대 원천 차단' 방어막 👇
+  useEffect(() => {
+    // 1. 두 손가락 핀치 줌(Pinch Zoom) 차단
+    const preventPinchZoom = (e: TouchEvent) => {
+      if (e.touches.length > 1) {
+        e.preventDefault(); // 두 손가락이 닿으면 브라우저의 기본 확대 동작을 죽여버립니다.
+      }
+    };
+
+    // 2. 따닥! 더블 탭 줌(Double Tap Zoom) 차단
+    let lastTouchEnd = 0;
+    const preventDoubleTapZoom = (e: TouchEvent) => {
+      const now = new Date().getTime();
+      // 0.3초(300ms) 안에 다시 터치(더블 탭)가 감지되면 동작을 죽입니다.
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    };
+
+    // passive: false 옵션을 반드시 주어야 e.preventDefault()가 뚫리지 않고 작동합니다.
+    document.addEventListener('touchmove', preventPinchZoom, { passive: false });
+    document.addEventListener('touchend', preventDoubleTapZoom, { passive: false });
+
+    return () => {
+      document.removeEventListener('touchmove', preventPinchZoom);
+      document.removeEventListener('touchend', preventDoubleTapZoom);
+    };
+  }, []);
+  
+  
+  
   // 👇 새로 추가할 갤러리용 상태 및 데이터 👇
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
@@ -571,7 +603,7 @@ export default function WeddingInvitation() {
                 {/* 1. 네이버 지도 (앱 호출 공식 URL) */}
                 {/* 👇 수정 후: 템플릿 리터럴(백틱 `)과 encodeURIComponent 적용, menu=route 변경 👇 */}
                 <button 
-                  onClick={() => window.open(`https://app.map.naver.com/launchApp/?version=11&menu=route&goalname=${encodeURIComponent('호텔 인터불고 엑스코')}&goalx=128.611285546387&goaly=35.9069985378003`)}
+                  onClick={() => window.open(`https://app.map.naver.com/launchApp/?version=11&menu=route&ename=${encodeURIComponent('호텔 인터불고 엑스코')}&ex=128.611285546387&ey=35.9069985378003`)}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
                   <Image src="/images/icon-naver.png" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
