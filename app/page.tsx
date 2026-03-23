@@ -603,7 +603,7 @@ export default function WeddingInvitation() {
                 {/* 1. 네이버 지도 (앱 호출 공식 URL + 완벽한 도착지 파라미터) */}
                 {/* 👇 dname(도착지 이름), dlat(도착지 위도 y), dlng(도착지 경도 x) 암호를 사용합니다 👇 */}
                 <button 
-                  onClick={() => window.open(`https://app.map.naver.com/launchApp/?version=11&menu=route&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&dlat=35.9069985378003&dlng=128.611285546387`)}
+                  onClick={() => window.open(`https://app.map.naver.com/launchApp/?version=11&menu=navigation&goalname=${encodeURIComponent('호텔 인터불고 엑스코')}&goaly=35.9069985378003&goalx=128.611285546387`)}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
                   <Image src="/images/icon-naver.png" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
