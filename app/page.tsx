@@ -600,10 +600,10 @@ export default function WeddingInvitation() {
               <p className="text-sm text-gray-500 mb-5">원하는 앱을 선택하시면 길 안내가 시작됩니다.</p>
               
               <div className="flex justify-between gap-2">
-                {/* 1. 네이버 지도 (최신 V5 유니버셜 링크) */}
-                {/* 👇 URL에 경도(128...), 위도(35...), 이름이 순서대로 들어갑니다 👇 */}
+                {/* 1. 네이버 지도 (앱 호출 공식 URL + 완벽한 도착지 파라미터) */}
+                {/* 👇 dname(도착지 이름), dlat(도착지 위도 y), dlng(도착지 경도 x) 암호를 사용합니다 👇 */}
                 <button 
-                  onClick={() => window.open(`https://map.naver.com/p/directions/-/128.611285546387,35.9069985378003,${encodeURIComponent('호텔 인터불고 엑스코')}/-/transit?c=15.0,0,0,0,dh`)}
+                  onClick={() => window.open(`https://app.map.naver.com/launchApp/?version=11&menu=route&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&dlat=35.9069985378003&dlng=128.611285546387`)}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
                   <Image src="/images/icon-naver.png" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
