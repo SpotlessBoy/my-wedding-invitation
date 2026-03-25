@@ -419,18 +419,14 @@ export default function WeddingInvitation() {
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">INVITATION</h2>
-            <p className="font-point2 leading-[1.5] text-[17px] mb-8">
+            <p className="font-point2 leading-[1.6] text-[17px] mb-8">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
               그대 생각 내게 머물므로<br />
 			  나의 세상은 빛나는 세상이 됩니다<br />
 			  - 나태주, &lt;들길을 걸으며&gt; -
               </p>
-			  <p className="font-point leading-[2.0] text-[16px] mb-8 whitespace-nowrap break-keep">
-              귀한 걸음 하시어 두 사람의 빛나는 시작을<br />
-              기쁜 마음으로 축복해주시면 감사하겠습니다
-            </p>
-            
+			              
             <motion.div 
               initial={{ opacity: 0, y: 15 }} 
               whileInView={{ opacity: 1, y: 0 }}
@@ -449,11 +445,16 @@ export default function WeddingInvitation() {
               />
             </motion.div>
             
-            <div className="flex justify-center items-center text-[18px] font-point font-normal">
+			<p className="font-point leading-[1.8] text-[16px] mb-5 whitespace-nowrap break-keep">
+              귀한 걸음 하시어 두 사람의 빛나는 시작을<br />
+              기쁜 마음으로 축복해주시면 감사하겠습니다
+            </p>
+			
+            <div className="flex justify-center items-center text-[18px] font-point2 font-normal">
 			{/* 왼쪽: 부모님 성함 */}
 				<div className="text-right text-gray-700 leading-relaxed">
 					<p>장규암 &middot; 라말분</p>
-					<p className="mt-2">박주득 &middot; 서정남</p>
+					<p className="mt-1">박주득 &middot; 서정남</p>
 				</div>
 
 			{/* 오른쪽: 관계 및 신랑신부 성함 */}
@@ -463,7 +464,7 @@ export default function WeddingInvitation() {
 					<span className="text-[13px] text-gray-400 w-[55px] text-center">아들</span>
 					<span className="font-bold text-gray-900">장상엽</span>
 					</p>
-					<p className="mt-2 flex items-baseline">
+					<p className="mt-1 flex items-baseline">
 					<span className="text-[13px] text-gray-400 w-[5px] text-center">의</span>
 					<span className="text-[13px] text-gray-400 w-[55px] text-center">딸</span>
 					<span className="font-bold text-gray-900">박진솔</span>
