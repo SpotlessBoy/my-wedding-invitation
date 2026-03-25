@@ -557,7 +557,7 @@ export default function WeddingInvitation() {
   const dayCount = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
 
   let dDayText = "";
-  let descriptionText = "";
+  let descriptionText: React.ReactNode = "";
 
   if (dayCount > 0) {
     // 결혼식 전
