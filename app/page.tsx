@@ -142,7 +142,7 @@ export default function WeddingInvitation() {
   // aspect 속성을 다르게 주어 가로/세로가 자연스럽게 섞이는 메이슨리 레이아웃을 만듭니다.
   const galleryPhotos = Array.from({ length: 28 }).map((_, i) => ({
     id: i,
-    src: `/images/gallery/${i + 1}.jpg?v=4`, // public/images/gallery/ 폴더에 1.jpg~28.jpg 저장 필요
+    src: `/images/gallery/${i + 1}.jpg?v=5`, // public/images/gallery/ 폴더에 1.jpg~28.jpg 저장 필요
     aspect: i % 4 === 0 ? 'aspect-[4/3]' : i % 7 === 0 ? 'aspect-square' : 'aspect-[3/4]', 
   }));
 
@@ -428,19 +428,20 @@ export default function WeddingInvitation() {
             </p>
             
             <motion.div 
-              initial={{ opacity: 0, y: 15 }} // y축 이동을 추가해 주면 서서히 올라옵니다
-			  whileInView={{ opacity: 1, y: 0 }}
-			  viewport={{ once: false, amount: 0.1 }} // once: true를 once: false로 변경
-			  transition={{ duration: 0.8 }}
-              className="relative w-[100%] aspect-[4/3] mx-auto mb-12 rounded-2xl overflow-hidden shadow-sm"
+              initial={{ opacity: 0, y: 15 }} 
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.1 }} 
+              transition={{ duration: 0.8 }}
+              // 👇 1. 가로형 원본 사진이 가장 예쁘게 담기는 3:2 비율의 액자로 변경 👇
+              className="relative w-full aspect-[3/2] mx-auto mb-12 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
-                src="/images/sub_main3_v2.jpg?v=3"
-                alt="신랑 신부 사진"
+                src="/images/sub_main3_v2.jpg?v=4" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
+                alt="lovers"
                 fill
-                quality={80} // 스크롤 시 나타나는 서브 사진 압축률 설정
-                sizes="(max-w: 480px) 100vw, 480px" // 기기 해상도에 맞춘 정확한 이미지 크기 요청
+                quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
                 className="object-cover object-center"
+                sizes="(max-w: 480px) 100vw, 480px"
               />
             </motion.div>
             
@@ -665,7 +666,8 @@ export default function WeddingInvitation() {
                       src={photo.src}
                       alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                       fill
-                      quality={50}
+					  unoptimized={true}
+                      // quality={50}
                       priority={index < 5} // 왼쪽 줄 상위 5장 미리 로딩
                       className="object-cover"
                       sizes="(max-w: 480px) 50vw, 240px"
@@ -691,7 +693,8 @@ export default function WeddingInvitation() {
                       src={photo.src}
                       alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                       fill
-                      quality={50}
+					  unoptimized={true}
+                      // quality={50}
                       priority={index < 5} // 오른쪽 줄 상위 5장 미리 로딩
                       className="object-cover"
                       sizes="(max-w: 480px) 50vw, 240px"
@@ -867,10 +870,13 @@ export default function WeddingInvitation() {
                     src={galleryPhotos[selectedPhotoIndex].src}
                     alt={`확대된 웨딩 사진 ${selectedPhotoIndex + 1}`}
                     fill
-                    quality={90}
+                  // 👇 확대 사진도 로딩 지연이 없도록 unoptimized를 추가합니다 👇
+                    unoptimized={true}
                     priority 
                     className="object-contain" 
-                    sizes="100vw"
+                  // 👇 핵심: 어떤 모바일 브라우저에서도 원본 비율을 무조건 유지하도록 강제합니다! 👇
+                  style={{ objectFit: 'contain' }} 
+                  sizes="100vw"
                   />
                 </motion.div>
               </AnimatePresence>
