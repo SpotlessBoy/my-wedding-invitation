@@ -418,7 +418,7 @@ export default function WeddingInvitation() {
         {/* 2. 초대글 섹션 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">INVITATION</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">INVITATION</h2>
             <p className="font-point2 leading-[2.2] text-[17px] mb-8">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
@@ -449,22 +449,27 @@ export default function WeddingInvitation() {
               />
             </motion.div>
             
-            <div className="flex justify-center items-center gap-1 text-[15px] font-normal">
-              <div className="text-right font-point font-normal">
-                <p>장규암 &middot; 라말분</p>
-                <p className="font-point mt-2">박주득 &middot; 서정남</p>
-              </div>
-              <div className="text-lg font-point text-gray-400 text-left font-normal -ml-0.5">
-                <p>
-                  의 <span className="inline-block font-point w-10 text-center text-black">아들</span>{' '}
-                  <span className="text-base font-point font-bold text-gray-900">장상엽</span>
-                </p>
-                <p className="font-point mt-2">
-                  의 <span className="inline-block font-point w-10 text-center text-black">딸</span>{' '}
-                  <span className="text-base font-point font-bold text-gray-900">박진솔</span>
-                </p>
-              </div>
-            </div>
+            <div className="flex justify-center items-center text-[16px] font-point font-normal">
+			{/* 왼쪽: 부모님 성함 */}
+				<div className="text-right text-gray-700 leading-relaxed">
+					<p>장규암 &middot; 라말분</p>
+					<p className="mt-2">박주득 &middot; 서정남</p>
+				</div>
+
+			{/* 오른쪽: 관계 및 신랑신부 성함 */}
+			<div className="text-left leading-relaxed">
+					<p className="flex items-baseline">
+					<span className="text-[13px] text-gray-400 w-[5px] text-center">의</span>
+					<span className="text-[13px] text-gray-400 w-[55px] text-center">아들</span>
+					<span className="font-bold text-gray-900">장상엽</span>
+					</p>
+					<p className="mt-2 flex items-baseline">
+					<span className="text-[13px] text-gray-400 w-[5px] text-center">의</span>
+					<span className="text-[13px] text-gray-400 w-[55px] text-center">딸</span>
+					<span className="font-bold text-gray-900">박진솔</span>
+					</p>
+				</div>
+			</div>
           </FadeIn>
         </section>
 
@@ -472,7 +477,7 @@ export default function WeddingInvitation() {
 {/* 🌟 새로 추가된 3. WEDDING DATE 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-white lining-nums tabular-nums">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">WEDDING DATE</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">WEDDING DATE</h2>
             
             {/* 1. 날짜 및 시간 강조 */}
             <div className="mb-12">
@@ -608,7 +613,7 @@ export default function WeddingInvitation() {
         {/* 4. 장소 안내 섹션 (배경색 교차를 위해 #FAFAFA로 변경) */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">LOCATION</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">LOCATION</h2>
             <div className="relative w-full aspect-[20/9] rounded-2xl overflow-hidden mb-10 shadow-sm mx-auto">
               <Image
                 src="/images/wedding_hall.jpg?v=2"
@@ -680,7 +685,7 @@ export default function WeddingInvitation() {
 		{/* 🌟 새로 추가된 5. 갤러리 (GALLERY) 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">GALLERY</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">GALLERY</h2>
             
             {/* 메이슨리(Masonry) 레이아웃 그리드 */}
             {/* CSS columns-2를 사용하여 세로로 흐르듯 자연스럽게 빈 공간을 채웁니다 */}
@@ -771,7 +776,7 @@ export default function WeddingInvitation() {
         <section className="relative z-10 -mt-px py-24 px-8 bg-white">
           {/* ... 기존 계좌번호 코드 동일 ... */}
           <FadeIn>
-            <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium">FOR YOUR HEART</h2>
+            <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium whitespace-nowrap">FOR YOUR HEART</h2>
             <p className="text-center text-sm text-gray-500 mb-8 leading-relaxed">
               참석이 어려우신 분들을 위해<br />
               계좌번호를 기재하였습니다.<br />
