@@ -138,15 +138,15 @@ export default function WeddingInvitation() {
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
-  // 갤러리 이미지 데이터 (총 20장 예시)
+  // 갤러리 이미지 데이터 (총 28장 예시)
   // aspect 속성을 다르게 주어 가로/세로가 자연스럽게 섞이는 메이슨리 레이아웃을 만듭니다.
-  const galleryPhotos = Array.from({ length: 20 }).map((_, i) => ({
+  const galleryPhotos = Array.from({ length: 28 }).map((_, i) => ({
     id: i,
-    src: `/images/gallery/${i + 1}.jpg?v=3`, // public/images/gallery/ 폴더에 1.jpg~20.jpg 저장 필요
+    src: `/images/gallery/${i + 1}.jpg?v=4`, // public/images/gallery/ 폴더에 1.jpg~28.jpg 저장 필요
     aspect: i % 4 === 0 ? 'aspect-[4/3]' : i % 7 === 0 ? 'aspect-square' : 'aspect-[3/4]', 
   }));
 
-  const displayedPhotos = showAllGallery ? galleryPhotos : galleryPhotos.slice(0, 6); // 처음엔 6장만 노출
+  const displayedPhotos = showAllGallery ? galleryPhotos : galleryPhotos.slice(0, 5); // 처음엔 6장만 노출
 
   // 스와이프 및 버튼 넘김 처리 함수
   const handleNextPhoto = (e: React.MouseEvent) => {
@@ -417,13 +417,14 @@ export default function WeddingInvitation() {
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">INVITATION</h2>
             <p className="leading-[2.2] text-[15px] mb-12">
-              서로가 마주보며 다져온 사랑을<br />
-              이제 함께 한 곳을 바라보며<br />
-              걸어갈 수 있는 큰 사랑으로 키우고자 합니다.<br />
+              세상에 와 그대를 만난 건<br />
+              내게 얼마나 행운이었나<br />
+              그대 생각 내게 머물므로<br />
+			  나의 세상은 빛나는 세상이 됩니다<br />
+			  - 나태주, &lt;들길을 걸으며&gt; -<br />
               <br />
-              저희 두 사람이 사랑의 이름으로<br />
-              지켜나갈 수 있도록<br />
-              앞날을 축복해 주시면 감사하겠습니다.
+              귀한 걸음하시어 두 사람의 빛나는 시작을<br />
+              기쁜 마음으로 축복해주시면 감사하겠습니다
             </p>
             
             <motion.div 
@@ -434,7 +435,7 @@ export default function WeddingInvitation() {
               className="relative w-[100%] aspect-[4/3] mx-auto mb-12 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
-                src="/images/sub_main3.jpg?v=2"
+                src="/images/sub_main3_v2.jpg?v=3"
                 alt="신랑 신부 사진"
                 fill
                 quality={80} // 스크롤 시 나타나는 서브 사진 압축률 설정
@@ -527,7 +528,7 @@ export default function WeddingInvitation() {
               className="relative w-[100%] aspect-[3/2] mx-auto mb-10 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
             >
               <Image
-                src="/images/sub_date.jpg?v=2" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
+                src="/images/sub_date.jpg?v=3" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
                 alt="골목길 스냅이에욥"
                 fill
                 quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
@@ -605,7 +606,7 @@ export default function WeddingInvitation() {
                   onClick={() => window.location.href = `nmap://route/public?dlat=35.9069985378003&dlng=128.611285546387&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&appname=wedding`}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
-                  <Image src="/images/icon-naver.png" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
+                  <Image src="/images/icon-naver.png?v=2" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
                   네이버지도
                 </button>
 
@@ -614,7 +615,7 @@ export default function WeddingInvitation() {
                   onClick={() => window.location.href = 'tmap://route?goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003'}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
-                  <Image src="/images/icon-tmap.png" alt="티맵" width={18} height={18} className="rounded-[4px]" />
+                  <Image src="/images/icon-tmap.png?v=2" alt="티맵" width={18} height={18} className="rounded-[4px]" />
                   티맵
                 </button>
 
@@ -623,7 +624,7 @@ export default function WeddingInvitation() {
                   onClick={() => window.open('https://map.kakao.com/link/to/호텔 인터불고 엑스코,35.9069985378003,128.611285546387')}
                   className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
                 >
-                  <Image src="/images/icon-kakao.png" alt="카카오내비" width={18} height={18} className="rounded-[4px]" />
+                  <Image src="/images/icon-kakao.png?v=2" alt="카카오내비" width={18} height={18} className="rounded-[4px]" />
                   카카오내비
                 </button>
               </div>
