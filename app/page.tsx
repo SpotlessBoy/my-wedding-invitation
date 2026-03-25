@@ -426,7 +426,7 @@ export default function WeddingInvitation() {
 			  나의 세상은 빛나는 세상이 됩니다<br />
 			  - 나태주, &lt;들길을 걸으며&gt; -
               </p>
-			  <p className="font-point leading-[2.2] text-[17px] mb-12">
+			  <p className="font-point leading-[2.2] text-[16px] mb-12 whitespace-nowrap break-keep">
               귀한 걸음 하시어 두 사람의 빛나는 시작을<br />
               기쁜 마음으로 축복해주시면 감사하겠습니다
             </p>
