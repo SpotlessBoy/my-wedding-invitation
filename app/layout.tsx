@@ -1,15 +1,29 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Serif_KR } from "next/font/google"; 
+import localFont from 'next/font/local';
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+
+// 1. 본문용 기본 폰트
+const notoSerif = Noto_Serif_KR({
+  weight: ['300', '400', '500', '700'],
   subsets: ["latin"],
+  variable: "--font-noto-serif", 
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// 2. 포인트 폰트 (예: 제목용)
+const customWeddingFont = localFont({
+  src: '../public/fonts/wedd.woff2', // 👈 실제 폰트 파일명으로 꼭 수정해 주세요!
+  variable: '--font-custom-wedding',
+  weight: '400',
+  display: 'swap'
+});
+
+const customWeddingFont2 = localFont({
+  src: '../public/fonts/wedd2.woff2', // 👈 실제 폰트 파일명으로 꼭 수정해 주세요!
+  variable: '--font-custom-wedding2',
+  weight: '400',
+  display: 'swap'
 });
 
 export const viewport = {
@@ -40,10 +54,13 @@ export const metadata: Metadata = {
   },
 };
 
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
-      <body>{children}</body>
+    // html 태그에 폰트 변수 두 개를 모두 주입합니다
+    <html lang="ko" className={`${customWeddingFont.variable} ${customWeddingFont2.variable} antialiased`}>
+      {/* 기본적으로 전체 글씨는 font-base(Noto Serif)가 적용되도록 설정합니다 */}
+      <body className="font-base text-[#333333]">{children}</body>
     </html>
   );
 }

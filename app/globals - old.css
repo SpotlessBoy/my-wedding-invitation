@@ -13,7 +13,6 @@
   /* 👇 기존 geist 폰트를 지우고, 우리가 만든 폰트로 교체합니다 👇 */
   --font-base: var(--font-noto-serif), serif;
   --font-point: var(--font-custom-wedding), sans-serif;
-  --font-point2: var(--font-custom-wedding2), sans-serif;
 }
 
 /* 아래쪽의 기존 코드(tailwind utilities 등)들은 그대로 두시면 됩니다 */

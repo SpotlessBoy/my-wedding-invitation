@@ -8,7 +8,6 @@ import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
 import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
 
 
-
 const brightWeddingColors = ['#FFD1DC', '#FFFFE0', '#FFDAB9', '#FFFFF0', '#FFB6C1', '#FFF8DC'];
 // 하트가 아닌 진짜 '꽃잎(Teardrop)' 모양 SVG
 const RealPetalSVG = ({ color }: { color: string }) => (
@@ -197,18 +196,16 @@ export default function WeddingInvitation() {
       const now = new Date().getTime();
       const difference = target - now;
 
-      // 절대값을 사용하여 지나간 시간도 계산할 수 있게 합니다.
-      const absDiff = Math.abs(difference);
-
-      setTimeLeft({
-        days: Math.floor(absDiff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((absDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        mins: Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60)),
-        secs: Math.floor((absDiff % (1000 * 60)) / 1000),
-      });
-
-      // 결혼식이 지났다고 해서 타이머를 멈추지 않고 계속 실행하거나, 
-      // 필요에 따라 로직을 유지합니다. (D+ 계산을 위해 계속 실행 추천)
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          mins: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          secs: Math.floor((difference % (1000 * 60)) / 1000),
+        });
+      } else {
+        clearInterval(interval);
+      }
     }, 1000);
     
     return () => {
@@ -271,7 +268,7 @@ export default function WeddingInvitation() {
   return (
     // 변경 후 (우클릭 방지 이벤트 및 Tailwind CSS 선택 방지 클래스 추가)
 	<main 
-		className="min-h-screen bg-[#FDFDFD] text-[#333333] selection:bg-rose-100 relative select-none [&_img]:pointer-events-none"
+		className="min-h-screen bg-[#FDFDFD] text-[#333333] font-serif selection:bg-rose-100 relative select-none [&_img]:pointer-events-none"
 		onContextMenu={(e) => e.preventDefault()} // 우클릭 방지
 	>
 	
@@ -392,14 +389,14 @@ export default function WeddingInvitation() {
 					WebkitBackfaceVisibility: 'hidden' // ✅ 추가
 						}}
 			>
-              <h1 className="text-3xl font-point tracking-[0.22em] mb-4 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.8),0_2px_8px_rgba(0,0,0,0.6)]">
+              <h1 className="text-2xl font-semibold tracking-[0.22em] mb-4 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.8),0_2px_8px_rgba(0,0,0,0.6)]">
                 우리, 결혼합니다
               </h1>
               <div className="w-[1px] h-10 bg-white/90 mx-auto mb-5 [box-shadow:0_0_6px_rgba(0,0,0,0.4)]" />
-              <p className="text-2xl font-point font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.8),0_2px_6px_rgba(0,0,0,0.5)]">
-                장상엽 <span className="text-lg font-normal text-white/95 mx-1">그리고</span> 박진솔
-              </p> 
-              <p className="text-sm font-normal text-white/95 leading-relaxed mt-4 [text-shadow:0_1px_2px_rgba(0,0,0,0.7),0_2px_4px_rgba(0,0,0,0.5)]">
+              <p className="text-lg font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.8),0_2px_6px_rgba(0,0,0,0.5)]">
+                장상엽 <span className="text-sm font-normal text-white/95 mx-1">그리고</span> 박진솔
+              </p>
+              <p className="text-sm font-medium text-white/95 leading-relaxed mt-4 [text-shadow:0_1px_2px_rgba(0,0,0,0.7),0_2px_4px_rgba(0,0,0,0.5)]">
                 2026년 6월 7일 일요일 12시 30분<br />
                 호텔 인터불고 엑스코 2층 그랑파티오
               </p>
@@ -419,14 +416,13 @@ export default function WeddingInvitation() {
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">INVITATION</h2>
-            <p className="font-point2 leading-[2.2] text-[17px] mb-8">
+            <p className="leading-[2.2] text-[15px] mb-12">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
               그대 생각 내게 머물므로<br />
 			  나의 세상은 빛나는 세상이 됩니다<br />
-			  - 나태주, &lt;들길을 걸으며&gt; -
-              </p>
-			  <p className="font-point leading-[2.2] text-[17px] mb-12">
+			  - 나태주, &lt;들길을 걸으며&gt; -<br />
+              <br />
               귀한 걸음 하시어 두 사람의 빛나는 시작을<br />
               기쁜 마음으로 축복해주시면 감사하겠습니다
             </p>
@@ -450,18 +446,18 @@ export default function WeddingInvitation() {
             </motion.div>
             
             <div className="flex justify-center items-center gap-1 text-[15px] font-normal">
-              <div className="text-right font-point font-normal">
+              <div className="text-right font-normal">
                 <p>장규암 &middot; 라말분</p>
-                <p className="font-point mt-2">박주득 &middot; 서정남</p>
+                <p className="mt-2">박주득 &middot; 서정남</p>
               </div>
-              <div className="text-lg font-point text-gray-400 text-left font-normal -ml-0.5">
+              <div className="text-sm text-gray-400 text-left font-normal -ml-0.5">
                 <p>
-                  의 <span className="inline-block font-point w-10 text-center text-black">아들</span>{' '}
-                  <span className="text-base font-point font-bold text-gray-900">장상엽</span>
+                  의 <span className="inline-block w-10 text-center text-black">아들</span>{' '}
+                  <span className="text-base font-bold text-gray-900">장상엽</span>
                 </p>
-                <p className="font-point mt-2">
-                  의 <span className="inline-block font-point w-10 text-center text-black">딸</span>{' '}
-                  <span className="text-base font-point font-bold text-gray-900">박진솔</span>
+                <p className="mt-2">
+                  의 <span className="inline-block w-10 text-center text-black">딸</span>{' '}
+                  <span className="text-base font-bold text-gray-900">박진솔</span>
                 </p>
               </div>
             </div>
@@ -470,7 +466,7 @@ export default function WeddingInvitation() {
 
 
 {/* 🌟 새로 추가된 3. WEDDING DATE 섹션 🌟 */}
-        <section className="relative z-10 -mt-px py-24 px-8 text-center bg-white lining-nums tabular-nums">
+        <section className="relative z-10 -mt-px py-24 px-8 text-center bg-white">
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium">WEDDING DATE</h2>
             
@@ -543,65 +539,30 @@ export default function WeddingInvitation() {
             </motion.div>
             {/* 👆 추가된 스냅 사진 끝 👆 */}
 
-            
             {/* 3 & 4. 실시간 카운트다운 및 동적 메시지 */}
-{isMounted && (() => {
-  const now = new Date();
-  const target = new Date('2026-06-07T12:30:00+09:00');
-  
-  // 날짜만 비교하기 위해 시간 정보를 제거한 객체 생성
-  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const weddingDate = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime();
-  
-  const dateDiff = weddingDate - todayDate;
-  const dayCount = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
-
-  let dDayText = "";
-  let descriptionText = "";
-
-  if (dayCount > 0) {
-    // 결혼식 전
-    dDayText = `D - ${dayCount}`;
-    descriptionText = <>상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이 <span className="text-rose-500 font-bold lining-nums tabular-nums">{dayCount}일</span> 남았습니다.</>;
-  } else if (dayCount === 0) {
-    // 결혼식 당일
-    dDayText = "D-DAY";
-    descriptionText = <>축하해주세요! <span className="text-rose-500 font-bold text-lg">오늘</span>은 두 사람의 결혼식입니다.</>;
-  } else {
-    // 결혼식 후
-    const passedDays = Math.abs(dayCount);
-    dDayText = `D+${passedDays}`;
-    descriptionText = <>상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔이 함께한 지 <span className="text-rose-500 font-bold">{passedDays}일</span> 되었습니다.</>;
-  }
-
-  return (
-    <div className="bg-[#FAFAFA] rounded-2xl p-6 shadow-sm border border-gray-100">
-      {/* 상단 D-DAY 표시 */}
-      <div className="text-2xl font-bold text-rose-500 mb-4 tracking-tighter font-sans lining-nums tabular-nums">
-        {dDayText}
-      </div>
-
-      <div className="flex justify-center items-center gap-3 mb-6">
-        {[
-          { label: 'DAYS', value: timeLeft.days },
-          { label: 'HOURS', value: timeLeft.hours },
-          { label: 'MINS', value: timeLeft.mins },
-          { label: 'SECS', value: timeLeft.secs },
-        ].map((item, idx) => (
-          <div key={idx} className="flex flex-col items-center">
-            <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl font-medium text-gray-800 mb-2 border border-gray-50">
-              {String(item.value).padStart(2, '0')}
-            </div>
-            <span className="text-[10px] text-gray-400 tracking-widest font-medium">{item.label}</span>
-          </div>
-        ))}
-      </div>
-      <p className="text-[15px] text-gray-600 font-medium mt-2">
-        {descriptionText}
-      </p>
-    </div>
-  );
-})()}
+            {isMounted && (
+              <div className="bg-[#FAFAFA] rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex justify-center items-center gap-3 mb-6">
+                  {[
+                    { label: 'DAYS', value: timeLeft.days },
+                    { label: 'HOURS', value: timeLeft.hours },
+                    { label: 'MINS', value: timeLeft.mins },
+                    { label: 'SECS', value: timeLeft.secs },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex flex-col items-center">
+                      <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl font-medium text-gray-800 mb-2 border border-gray-50">
+                        {String(item.value).padStart(2, '0')}
+                      </div>
+                      <span className="text-[10px] text-gray-400 tracking-widest font-medium">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[15px] text-gray-600 font-medium mt-2">
+                  상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이{' '}
+                  <span className="text-rose-500 font-bold font-sans tracking-tight lining-nums tabular-nums">{timeLeft.days+1}일</span> 남았습니다.
+                </p>
+              </div>
+            )}
           </FadeIn>
         </section>
 		
