@@ -419,14 +419,14 @@ export default function WeddingInvitation() {
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">INVITATION</h2>
-            <p className="font-point2 leading-[2.2] text-[17px] mb-8">
+            <p className="font-point2 leading-[1.5] text-[17px] mb-8">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
               그대 생각 내게 머물므로<br />
 			  나의 세상은 빛나는 세상이 됩니다<br />
 			  - 나태주, &lt;들길을 걸으며&gt; -
               </p>
-			  <p className="font-point leading-[2.2] text-[16px] mb-12 whitespace-nowrap break-keep">
+			  <p className="font-point leading-[2.0] text-[16px] mb-8 whitespace-nowrap break-keep">
               귀한 걸음 하시어 두 사람의 빛나는 시작을<br />
               기쁜 마음으로 축복해주시면 감사하겠습니다
             </p>
@@ -437,7 +437,7 @@ export default function WeddingInvitation() {
               viewport={{ once: false, amount: 0.1 }} 
               transition={{ duration: 0.8 }}
               // 👇 1. 가로형 원본 사진이 가장 예쁘게 담기는 3:2 비율의 액자로 변경 👇
-              className="relative w-full aspect-[3/2] mx-auto mb-12 rounded-2xl overflow-hidden shadow-sm"
+              className="relative w-full aspect-[3/2] mx-auto mb-8 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
                 src="/images/sub_main3_v2.jpg?v=4" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
@@ -449,7 +449,7 @@ export default function WeddingInvitation() {
               />
             </motion.div>
             
-            <div className="flex justify-center items-center text-[16px] font-point font-normal">
+            <div className="flex justify-center items-center text-[18px] font-point font-normal">
 			{/* 왼쪽: 부모님 성함 */}
 				<div className="text-right text-gray-700 leading-relaxed">
 					<p>장규암 &middot; 라말분</p>
