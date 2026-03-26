@@ -163,6 +163,30 @@ export default function WeddingInvitation() {
   }, [showIntro]);
   
   
+  // 👇 1. 절대 실패하지 않는 카카오톡 SDK 강제 주입 및 초기화 👇
+  useEffect(() => {
+    const win = window as any;
+    
+    // 이미 카카오 스크립트가 있다면 중복해서 불러오지 않습니다.
+    if (!win.Kakao) {
+      const script = document.createElement('script');
+      script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
+      script.async = true;
+      
+      // 스크립트 다운로드가 끝나는 정확한 타이밍에 초기화 실행!
+      script.onload = () => {
+        if (win.Kakao && !win.Kakao.isInitialized()) {
+          win.Kakao.init('004f26b5647c72e1c527866f717d328b'); 
+        }
+      };
+      
+      document.body.appendChild(script);
+    }
+  }, []);
+  
+  
+  
+  
   // 👇 🚨 아이폰 사파리 확대 완벽 원천 차단 🚨 👇
   useEffect(() => {
     // 1. 두 손가락 핀치 줌(Pinch Zoom) 차단 (touchmove 뿐만 아니라 touchstart도 차단)
@@ -1203,19 +1227,7 @@ const handleCopy = (account: string) => {
           </FadeIn>
         </section>
 
-        {/* 👇 카카오톡 공유 기능을 위한 필수 스크립트 로드 👇 */}
-        <Script 
-          src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" 
-          integrity="sha384-TiCmbV6AjoJiF4V/W5jcRfsN8Bf8tG7F8bZqD0+zD31Q1g/Q1a4Fv6H0Aom/QeR" 
-          crossOrigin="anonymous" 
-          // 스크립트 다운로드가 완벽히 끝난 직후에 안전하게 초기화를 실행합니다!
-          onLoad={() => {
-            const win = window as any;
-            if (win.Kakao && !win.Kakao.isInitialized()) {
-              win.Kakao.init('004f26b5647c72e1c527866f717d328b');
-            }
-          }}
-        />
+        
 
         {/* 🌟 8. 푸터 🌟 */}
         <footer className="relative z-10 -mt-px py-12 bg-white text-center border-t border-gray-50">
