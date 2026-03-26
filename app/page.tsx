@@ -180,6 +180,13 @@ export default function WeddingInvitation() {
   };
   // 👆 갤러리용 상태 끝 👆
   
+  // 👇 라이트박스 프리로딩을 위한 다음/이전 사진 인덱스 계산 👇
+  const lightboxNextIndex = selectedPhotoIndex !== null 
+    ? (selectedPhotoIndex === galleryPhotos.length - 1 ? 0 : selectedPhotoIndex + 1) 
+    : 0;
+  const lightboxPrevIndex = selectedPhotoIndex !== null 
+    ? (selectedPhotoIndex === 0 ? galleryPhotos.length - 1 : selectedPhotoIndex - 1) 
+    : 0;
   
   
   // D-Day 타이머 상태 관리
@@ -631,7 +638,7 @@ export default function WeddingInvitation() {
   if (dayCount > 0) {
     // 결혼식 전
     dDayText = `D - ${dayCount}`;
-    descriptionText = <>상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이 <span className="text-rose-500 font-bold lining-nums tabular-nums">{dayCount}일</span> 남았습니다.</>;
+    descriptionText = <>상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이 <span className="text-rose-500 font-bold lining-nums tabular-nums whitespace-nowrap">{dayCount}일</span> 남았습니다.</>;
   } else if (dayCount === 0) {
     // 결혼식 당일
     dDayText = "D-DAY";
@@ -915,6 +922,7 @@ export default function WeddingInvitation() {
 
 
 	  {/* 👇 갤러리 라이트박스 (확대 모달) 👇 */}
+      {/* 👇 갤러리 라이트박스 (확대 모달) 👇 */}
       <AnimatePresence>
         {selectedPhotoIndex !== null && (
           <motion.div
@@ -924,7 +932,26 @@ export default function WeddingInvitation() {
             onClick={() => setSelectedPhotoIndex(null)} // 여백 클릭 시 닫힘
             className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center touch-none"
           >
-            {/* 닫기 버튼 */}
+            {/* 👇 새로 추가: 사용자가 사진을 보는 동안, 몰래 '다음'과 '이전' 사진을 고화질로 다운로드합니다 👇 */}
+            <div className="absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none -z-10">
+              <Image 
+                src={galleryPhotos[lightboxNextIndex].src} 
+                alt="preload next" 
+                fill 
+                unoptimized 
+                priority // 당장 화면엔 안 보이지만 가장 최우선으로 다운로드하라는 강력한 명령!
+              />
+              <Image 
+                src={galleryPhotos[lightboxPrevIndex].src} 
+                alt="preload prev" 
+                fill 
+                unoptimized 
+                priority 
+              />
+            </div>
+            {/* 👆 프리로딩 영역 끝 👆 */}
+
+            {/* 닫기 버튼 (기존 코드 동일) */}
             <button 
               onClick={() => setSelectedPhotoIndex(null)}
               className="absolute top-6 right-6 text-white/80 p-2 z-[210] active:scale-90"
