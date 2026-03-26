@@ -268,6 +268,46 @@ export default function WeddingInvitation() {
     28, 29, 30
   ];
 
+
+// 👇 버튼 클릭 핸들러 추가 👇
+
+  // 1. 네이버 지도: 앱 없으면 -> 모바일 웹 길찾기로 이동
+  const handleNaverMap = () => {
+    const scheme = `nmap://route/public?dlat=35.9069985378003&dlng=128.611285546387&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&appname=wedding`;
+    const fallbackWebUrl = `https://m.map.naver.com/route.nhn?menu=route&ena=${encodeURIComponent('호텔 인터불고 엑스코')}&ex=128.611285546387&ey=35.9069985378003&pathType=0`;
+
+    window.location.href = scheme;
+
+    setTimeout(() => {
+      // 0.5초 뒤에도 브라우저가 화면에 활성화되어 있다면 (앱이 열리지 않음)
+      if (!document.hidden) {
+        window.open(fallbackWebUrl, '_blank');
+      }
+    }, 500);
+  };
+
+  // 2. 티맵: 앱 없으면 -> 앱스토어/플레이스토어로 이동
+  const handleTmap = () => {
+    const scheme = 'tmap://route?goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003';
+    
+    // 사용자의 기기가 안드로이드인지 아이폰인지 판별
+    const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
+    const storeUrl = isAndroid 
+      ? "market://details?id=com.skt.tmap.ku" // 안드로이드 플레이스토어
+      : "https://apps.apple.com/kr/app/id431589174"; // 아이폰 앱스토어
+
+    window.location.href = scheme;
+
+    setTimeout(() => {
+      if (!document.hidden) {
+        window.open(storeUrl, '_blank');
+      }
+    }, 500);
+  };
+
+
+
+
   return (
     // 변경 후 (우클릭 방지 이벤트 및 Tailwind CSS 선택 방지 클래스 추가)
 	<main 
@@ -641,29 +681,26 @@ export default function WeddingInvitation() {
               약도 이미지 보기
             </button>
 			
-			{/* 👇 새로 추가되는 네비게이션 연동 섹션 👇 */}
-            <div className="mt-8 pt-8 border-t border-gray-100 text-left">
-              <h3 className="font-bold text-gray-800 mb-1 text-base">네비게이션</h3>
-              <p className="text-sm text-gray-500 mb-5">원하는 앱을 선택하시면 길 안내가 시작됩니다.</p>
-              
-              <div className="flex justify-between gap-2">
-                {/* 1. 네이버 지도 (앱 다이렉트 호출 네이티브 스킴) */}
-                <button 
-                  onClick={() => window.location.href = `nmap://route/public?dlat=35.9069985378003&dlng=128.611285546387&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&appname=wedding`}
-                  className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
-                >
-                  <Image src="/images/icon-naver.png?v=2" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
-                  네이버지도
-                </button>
+			{/* 👇 수정된 네비게이션 버튼 영역 👇 */}
+			<div className="flex justify-between gap-2">
+  
+			    {/* 1. 네이버 지도 */}
+				<button 
+				onClick={handleNaverMap} // 👈 함수 연결
+				className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
+				>
+				  <Image src="/images/icon-naver.png?v=2" alt="네이버 지도" width={18} height={18} className="rounded-[4px]" />
+				  네이버지도
+				</button>
 
-                {/* 2. 티맵 (URI 스킴 호출) */}
-                <button 
-                  onClick={() => window.location.href = 'tmap://route?goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003'}
-                  className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
-                >
-                  <Image src="/images/icon-tmap.png?v=2" alt="티맵" width={18} height={18} className="rounded-[4px]" />
-                  티맵
-                </button>
+				{/* 2. 티맵 */}
+				<button 
+				onClick={handleTmap} // 👈 함수 연결
+				className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
+				>
+				  <Image src="/images/icon-tmap.png?v=2" alt="티맵" width={18} height={18} className="rounded-[4px]" />
+				  티맵
+				  </button>
 
                 {/* 3. 카카오내비 (웹/앱 자동연결 링크) */}
                 <button 
@@ -673,8 +710,7 @@ export default function WeddingInvitation() {
                   <Image src="/images/icon-kakao.png?v=2" alt="카카오내비" width={18} height={18} className="rounded-[4px]" />
                   카카오내비
                 </button>
-              </div>
-            </div>
+              </div>            
             {/* 👆 네비게이션 연동 섹션 끝 👆 */}
 			
 			
