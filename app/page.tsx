@@ -138,6 +138,17 @@ export default function WeddingInvitation() {
   // 👇 새로 추가할 갤러리용 상태 및 데이터 👇
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  // 👇 1. 프리로딩 타이머 상태 추가 👇
+  const [preloadGallery, setPreloadGallery] = useState(false);
+
+  useEffect(() => {
+    // 하객이 첫 화면을 보고 3초쯤 지났을 때, 백그라운드에서 다음 갤러리 사진 다운로드를 시작합니다.
+    const timer = setTimeout(() => {
+      setPreloadGallery(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+  
 
   // ✅ 1. 가로형(풍경 비율) 사진 번호를 여기에 적어주세요! (1번부터 28번 중)
   // 예시: 8번, 10번, 18번 사진이 가로형일 경우
@@ -765,6 +776,24 @@ export default function WeddingInvitation() {
                 </motion.div>
               ))}
             </div>
+			
+			{/* 👇 2. 화면엔 안 보이지만 브라우저가 몰래 사진을 다운로드하는 '투명 망토' 영역 👇 */}
+            {!showAllGallery && preloadGallery && (
+              <div className="absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none -z-10">
+                {/* 22장을 다 부르면 데이터 낭비니, 버튼을 눌렀을 때 당장 눈에 보일 '다음 6장'만 미리 가져옵니다 */}
+                {galleryPhotos.slice(6, 12).map((photo) => (
+                  <Image
+                    key={`preload-${photo.id}`}
+                    src={photo.src}
+                    alt="preload"
+                    fill
+                    quality={60}
+                    sizes="(max-w: 480px) 50vw, 240px"
+                  />
+                ))}
+              </div>
+            )}	
+
 
           {/* 🚨 3. 버튼도 따로 FadeIn으로 감쌉니다 */}
           <FadeIn>
