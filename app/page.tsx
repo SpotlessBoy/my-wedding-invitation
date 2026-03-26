@@ -446,6 +446,46 @@ const handleCopy = (account: string) => {
   };
 
 
+// 👇 4. 스마트폰 캘린더 자동 리마인드 (일주일 전, 하루 전 자동 알람 포함!) 👇
+  const handleAddCalendar = () => {
+    // 캘린더 데이터 규격 안에 'VALARM(알람)' 설정을 추가합니다.
+    // -P1W : 1주 전 (1 Week)
+    // -P1D : 1일 전 (1 Day)
+    const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//YeopAndSol//WeddingInvitation//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+SUMMARY:장상엽 ♥ 박진솔 결혼식
+DTSTART;TZID=Asia/Seoul:20260607T123000
+DTEND;TZID=Asia/Seoul:20260607T143000
+LOCATION:호텔 인터불고 엑스코 2층 그랑파티오
+DESCRIPTION:두 사람의 빛나는 시작을 축복해 주세요.
+BEGIN:VALARM
+TRIGGER:-P1W
+ACTION:DISPLAY
+DESCRIPTION:장상엽 ♥ 박진솔 결혼식 일주일 전입니다!
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:내일은 장상엽 ♥ 박진솔 결혼식입니다!
+END:VALARM
+END:VEVENT
+END:VCALENDAR`.replace(/\n/g, '\r\n'); 
+
+    // 파일 다운로드 로직 (동일)
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'wedding_yeop_sol.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
 
   // 👇 2. 카카오톡 공유하기 버튼 함수 👇
   const handleKakaoShare = () => {
@@ -1229,12 +1269,13 @@ const handleCopy = (account: string) => {
 
         
 
-        {/* 🌟 8. 푸터 🌟 */}
+        {/* 🌟 8. 푸터 (리마인드 기능 추가) 🌟 */}
         <footer className="relative z-10 -mt-px py-12 bg-white text-center border-t border-gray-50">
           <FadeIn>
-            <div className="flex justify-center gap-15 mb-8">
+            {/* 버튼이 3개가 되므로 간격을 gap-6 정도로 알맞게 조절합니다 */}
+            <div className="flex justify-center gap-6 mb-8">
               
-              {/* 카카오톡 공유 버튼 */}
+              {/* 1. 카카오톡 공유 버튼 */}
               <button 
                 onClick={handleKakaoShare}
                 className="flex flex-col items-center gap-2 text-[13px] font-medium text-gray-600 active:scale-95 transition-transform"
@@ -1245,7 +1286,7 @@ const handleCopy = (account: string) => {
                 카카오톡 공유
               </button>
 
-              {/* 링크 복사 버튼 */}
+              {/* 2. 링크 복사 버튼 */}
               <button 
                 onClick={handleCopyLink}
                 className="flex flex-col items-center gap-2 text-[13px] font-medium text-gray-600 active:scale-95 transition-transform"
@@ -1254,6 +1295,17 @@ const handleCopy = (account: string) => {
                   <Copy size={22} />
                 </div>
                 청첩장 복사
+              </button>
+
+              {/* 👇 3. 새로 추가된 캘린더 리마인드 버튼 👇 */}
+              <button 
+                onClick={handleAddCalendar}
+                className="flex flex-col items-center gap-2 text-[13px] font-medium text-gray-600 active:scale-95 transition-transform"
+              >
+                <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-400 shadow-sm">
+                  <CalendarIcon size={22} />
+                </div>
+                일정 추가
               </button>
 
             </div>
