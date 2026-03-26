@@ -1,11 +1,12 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Utensils, Flower2 } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
 import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
+import Script from 'next/script';
 
 
 
@@ -335,6 +336,63 @@ export default function WeddingInvitation() {
     }, 500);
   };
 
+// 계좌번호 복사 관련
+const handleCopy = (account: string) => {
+    // 띄어쓰기나 '-' 기호를 빼고 숫자만 깔끔하게 복사되도록 합니다 (옵션)
+    const cleanAccount = account.replace(/[^0-9]/g, '');
+    navigator.clipboard.writeText(cleanAccount).then(() => {
+      alert('계좌번호가 복사되었습니다.');
+    }).catch(() => {
+      alert('복사를 지원하지 않는 브라우저입니다. 직접 길게 눌러 복사해 주세요.');
+    });
+  };
+
+// 👇 1. 카카오톡 SDK 초기화 (앱이 켜질 때 한 번만 실행) 👇
+  useEffect(() => {
+    // window 객체에 Kakao가 있고, 아직 초기화되지 않았다면 실행합니다.
+    if (typeof window !== 'undefined' && window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init('56f7bc15851d93fc13f4329030ee37fe'); // 🚨 주의: 나중에 꼭 본인의 키로 바꿔야 합니다!
+    }
+  }, []);
+
+  // 👇 2. 카카오톡 공유하기 버튼 함수 👇
+  const handleKakaoShare = () => {
+    if (typeof window !== 'undefined' && window.Kakao && window.Kakao.isInitialized()) {
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '장상엽 ♥ 박진솔 결혼합니다',
+          description: '2026년 6월 7일 일요일 12시 30분\n호텔 인터불고 엑스코 2층 그랑파티오',
+          // 카톡 채팅방에 보일 메인 썸네일 이미지 (절대 경로 필수)
+          imageUrl: 'https://yeop-n-sol.vercel.app/images/main.jpg', 
+          link: {
+            mobileWebUrl: 'https://yeop-n-sol.vercel.app',
+            webUrl: 'https://yeop-n-sol.vercel.app',
+          },
+        },
+        buttons: [
+          {
+            title: '모바일 청첩장 보기',
+            link: {
+              mobileWebUrl: 'https://yeop-n-sol.vercel.app',
+              webUrl: 'https://yeop-n-sol.vercel.app',
+            },
+          },
+        ],
+      });
+    } else {
+      alert('카카오톡 공유 기능을 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
+    }
+  };
+
+  // 👇 3. 청첩장 링크 복사 버튼 함수 👇
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText('https://yeop-n-sol.vercel.app').then(() => {
+      alert('청첩장 링크가 복사되었습니다! 카카오톡이나 문자로 공유해 보세요.');
+    }).catch(() => {
+      alert('복사를 지원하지 않는 브라우저입니다. 주소창의 링크를 직접 복사해 주세요.');
+    });
+  };
 
 
 
@@ -872,95 +930,246 @@ export default function WeddingInvitation() {
             
         </section>
 		
+		{/* 🌟 새로 추가된 6. 안내 사항 (INFORMATION) 섹션 🌟 */}
+        <section className="relative z-10 -mt-px py-24 px-8 bg-[#FAFAFA] text-center">
+          <FadeIn>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">INFORMATION</h2>
+          </FadeIn>
+
+          {/* 1. 식사 안내 카드 */}
+          <FadeIn delay={0.1}>
+            <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 mb-6">
+              <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-400">
+                <Utensils size={24} strokeWidth={1.5} />
+              </div>
+              <h3 className="font-bold text-gray-800 text-[17px] mb-4 font-point whitespace-nowrap">식사 안내</h3>
+              <p className="text-[14px] text-gray-600 leading-[1.8] break-keep">
+                정성껏 준비한 식사는 예식장과 동일한<br />
+				<span className="text-rose-500 font-medium whitespace-nowrap">2층 연회장 라그라나</span>에서<br />
+                맛있게 즐기실 수 있습니다.<br />
+                <br />
+                당일 예식 상황에 따라 식사 공간이<br />
+                다소 혼잡할 수 있는 점,<br />
+                하객 여러분들의 너른 양해를 부탁드립니다.
+              </p>
+            </div>
+          </FadeIn>
+
+          {/* 2. 화환 안내 카드 */}
+          <FadeIn delay={0.2}>
+            <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
+              <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-400">
+                <Flower2 size={24} strokeWidth={1.5} />
+              </div>
+              <h3 className="font-bold text-gray-800 text-[17px] mb-4 font-point whitespace-nowrap">축하 화환 안내</h3>
+              <p className="text-[14px] text-gray-600 leading-[1.8] break-keep">
+                호텔 인터불고 엑스코의 예식 규정상<br />
+                <span className="font-medium text-gray-800 whitespace-nowrap">대형 축하 화환은 반입이 불가</span>합니다.<br />
+                <br />
+                두 사람의 시작을 축하해 주실 분들께서는<br />
+                <span className="text-rose-500 font-medium whitespace-nowrap">꽃바구니나 화분</span>으로 보내주시면<br />
+                더욱 감사한 마음으로 간직하겠습니다.
+              </p>
+            </div>
+          </FadeIn>
+        </section>
 		
 
-        {/* 6. 마음 전하실 곳 섹션 생략 (기존 코드와 동일) */}
+        {/* 🌟 7. 마음 전하실 곳 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 bg-white">
-          {/* ... 기존 계좌번호 코드 동일 ... */}
           <FadeIn>
             <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium whitespace-nowrap">FOR YOUR HEART</h2>
-            <p className="text-center text-sm text-gray-500 mb-8 leading-relaxed">
+            <p className="text-center text-sm text-gray-500 mb-10 leading-relaxed break-keep">
               참석이 어려우신 분들을 위해<br />
               계좌번호를 기재하였습니다.<br />
               너른 양해 부탁드립니다.
             </p>
 
-            {/* 신랑측 계좌 */}
-            <div className="mb-4">
+            {/* 1. 신랑측 계좌 */}
+            <div className="mb-5">
               <button 
                 onClick={() => setOpenAccount(openAccount === 'groom' ? null : 'groom')}
-                className="w-full bg-white border border-gray-200 py-4 px-6 rounded-lg flex justify-between items-center text-[15px]"
+                className="w-full bg-white border border-gray-200 py-4 px-6 rounded-lg flex justify-between items-center text-[16px] font-medium transition-colors active:bg-gray-50 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
               >
-                <span>신랑측 계좌번호</span>
-                <span className="text-gray-400">{openAccount === 'groom' ? '▲' : '▼'}</span>
+                {/* 👇 신랑측은 듬직하고 차분한 블루톤 적용 👇 */}
+                <span className="text-blue-500">신랑측</span>
+                <span className="text-gray-400">
+                  {openAccount === 'groom' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </span>
               </button>
-              {openAccount === 'groom' && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }} 
-                  animate={{ height: 'auto', opacity: 1 }} 
-                  className="bg-gray-50 p-6 border-x border-b border-gray-200 rounded-b-lg text-sm"
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <p className="text-gray-500 mb-1">농협 123-4567-8901-23</p>
-                      <p>예금주: 신랑이름</p>
+              
+              <AnimatePresence>
+                {openAccount === 'groom' && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }} 
+                    animate={{ height: 'auto', opacity: 1 }} 
+                    exit={{ height: 0, opacity: 0 }}
+                    // overflow-hidden이 있어야 열리고 닫힐 때 높이 애니메이션이 부드럽습니다
+                    className="overflow-hidden bg-gray-50 border-x border-b border-gray-200 rounded-b-lg text-[14px]"
+                  >
+                    <div className="p-6 flex flex-col gap-1">
+                      
+                      {/* 신랑 아버지 */}
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                        <div>
+                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑 아버지</p>
+                          <p className="font-medium text-gray-800 tracking-wide">농협  123-4567-8901-23  장규암</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')} // 실제 복사될 계좌번호 숫자 입력
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
+                      {/* 신랑 어머니 */}
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                        <div>
+                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑 어머니</p>
+                          <p className="font-medium text-gray-800 tracking-wide">대구은행  123-4567-8901-23  라말분</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')}
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
+                      {/* 신랑 본인 */}
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑</p>
+                          <p className="font-medium text-gray-800 tracking-wide">농협은행  352-02785192-43  장상엽</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')}
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
                     </div>
-                    <button className="flex items-center gap-1 text-xs bg-white border border-gray-300 px-3 py-1.5 rounded hover:bg-gray-100">
-                      <Copy size={12} /> 복사
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* 신부측 계좌 */}
+
+            {/* 2. 신부측 계좌 */}
             <div>
               <button 
                 onClick={() => setOpenAccount(openAccount === 'bride' ? null : 'bride')}
-                className="w-full bg-white border border-gray-200 py-4 px-6 rounded-lg flex justify-between items-center text-[15px]"
+                className="w-full bg-white border border-gray-200 py-4 px-6 rounded-lg flex justify-between items-center text-[16px] font-medium transition-colors active:bg-gray-50 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
               >
-                <span>신부측 계좌번호</span>
-                <span className="text-gray-400">{openAccount === 'bride' ? '▲' : '▼'}</span>
+                {/* 👇 신부측은 따뜻하고 화사한 로즈톤 적용 👇 */}
+                <span className="text-rose-500">신부측</span>
+                <span className="text-gray-400">
+                  {openAccount === 'bride' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </span>
               </button>
-              {openAccount === 'bride' && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }} 
-                  animate={{ height: 'auto', opacity: 1 }} 
-                  className="bg-gray-50 p-6 border-x border-b border-gray-200 rounded-b-lg text-sm"
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <p className="text-gray-500 mb-1">국민 123-456-78-90123</p>
-                      <p>예금주: 신부이름</p>
+              
+              <AnimatePresence>
+                {openAccount === 'bride' && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }} 
+                    animate={{ height: 'auto', opacity: 1 }} 
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden bg-gray-50 border-x border-b border-gray-200 rounded-b-lg text-[14px]"
+                  >
+                    <div className="p-6 flex flex-col gap-1">
+                      
+                      {/* 신부 아버지 */}
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                        <div>
+                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신부 아버지</p>
+                          <p className="font-medium text-gray-800 tracking-wide">대구 123-4567-8901-23 박주득</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')}
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
+                      {/* 신부 어머니 */}
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                        <div>
+                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신부 어머니</p>
+                          <p className="font-medium text-gray-800 tracking-wide">우리 123-4567-8901-23 서정남</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')}
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
+                      {/* 신부 본인 */}
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신부</p>
+                          <p className="font-medium text-gray-800 tracking-wide">카카오뱅크 123-4567-8901-23 박진솔</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')}
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
                     </div>
-                    <button className="flex items-center gap-1 text-xs bg-white border border-gray-300 px-3 py-1.5 rounded hover:bg-gray-100">
-                      <Copy size={12} /> 복사
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+            
           </FadeIn>
         </section>
 
-        {/* 6. 푸터 */}
-        <footer className="relative z-10 -mt-px py-12 bg-white text-center">
+        {/* 👇 카카오톡 공유 기능을 위한 필수 스크립트 로드 👇 */}
+        <Script 
+          src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" 
+          integrity="sha384-TiCmbV6AjoJiF4V/W5jcRfsN8Bf8tG7F8bZqD0+zD31Q1g/Q1a4Fv6H0Aom/QeR" 
+          crossOrigin="anonymous" 
+          strategy="lazyOnload"
+        />
+
+        {/* 🌟 8. 푸터 🌟 */}
+        <footer className="relative z-10 -mt-px py-12 bg-white text-center border-t border-gray-50">
           <FadeIn>
-            <div className="flex justify-center gap-4 mb-8">
-              <button className="flex flex-col items-center gap-2 text-sm text-gray-600">
-                <div className="w-12 h-12 bg-[#FEE500] rounded-full flex items-center justify-center text-black">
-                  <MessageCircle size={20} />
+            <div className="flex justify-center gap-1 mb-8">
+              
+              {/* 카카오톡 공유 버튼 */}
+              <button 
+                onClick={handleKakaoShare}
+                className="flex flex-col items-center gap-2 text-[13px] font-medium text-gray-600 active:scale-95 transition-transform"
+              >
+                <div className="w-14 h-14 bg-[#FEE500] rounded-full flex items-center justify-center text-black shadow-sm">
+                  <MessageCircle size={22} fill="currentColor" />
                 </div>
-                카카오톡 공유
+                카톡 공유
               </button>
-              <button className="flex flex-col items-center gap-2 text-sm text-gray-600">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
-                  <Copy size={20} />
+
+              {/* 링크 복사 버튼 */}
+              <button 
+                onClick={handleCopyLink}
+                className="flex flex-col items-center gap-2 text-[13px] font-medium text-gray-600 active:scale-95 transition-transform"
+              >
+                <div className="w-14 h-14 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
+                  <Copy size={22} />
                 </div>
                 링크 복사
               </button>
+
             </div>
-            <p className="text-xs text-gray-400 tracking-widest">
+            
+            <p className="text-[11px] text-gray-400 tracking-[0.15em] font-medium">
               &copy; 2026. Yeop & Sol. H-E-A
             </p>
           </FadeIn>
