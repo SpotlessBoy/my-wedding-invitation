@@ -152,7 +152,7 @@ export default function WeddingInvitation() {
 
   // ✅ 1. 가로형(풍경 비율) 사진 번호를 여기에 적어주세요! (1번부터 28번 중)
   // 예시: 8번, 10번, 18번 사진이 가로형일 경우
-  const landscapePhotoIds = [8, 10, 18]; 
+  const landscapePhotoIds = [8, 9, 18]; 
 
   // 갤러리 이미지 데이터
   const galleryPhotos = Array.from({ length: 28 }).map((_, i) => {
@@ -162,7 +162,7 @@ export default function WeddingInvitation() {
     
     return {
       id: i,
-      src: `/images/gallery_v2/${photoNumber}.jpg`,
+      src: `/images/gallery_v3/${photoNumber}.jpg`,
       aspect: isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]', 
     };
   });
@@ -638,16 +638,38 @@ export default function WeddingInvitation() {
   if (dayCount > 0) {
     // 결혼식 전
     dDayText = `D - ${dayCount}`;
-    descriptionText = <>상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이 <span className="text-rose-500 font-bold lining-nums tabular-nums whitespace-nowrap">{dayCount}일</span> 남았습니다.</>;
+    descriptionText = (
+      <>
+        상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔의 결혼식이{' '}
+        {/* 👇 '00일 남았습니다.'를 한 덩어리로 묶어 절대 줄바꿈이 안 되게 막습니다 👇 */}
+        <span className="whitespace-nowrap">
+          <span className="text-rose-500 font-bold lining-nums tabular-nums">{dayCount}일</span> 남았습니다.
+        </span>
+      </>
+    );
   } else if (dayCount === 0) {
     // 결혼식 당일
     dDayText = "D-DAY";
-    descriptionText = <>축하해주세요! <span className="text-rose-500 font-bold text-lg">오늘</span>은 두 사람의 결혼식입니다.</>;
+    descriptionText = (
+      <>
+        축하해주세요!{' '}
+        <span className="whitespace-nowrap">
+          <span className="text-rose-500 font-bold text-lg">오늘</span>은 두 사람의 결혼식입니다.
+        </span>
+      </>
+    );
   } else {
     // 결혼식 후
     const passedDays = Math.abs(dayCount);
     dDayText = `D+${passedDays}`;
-    descriptionText = <>상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔이 함께한 지 <span className="text-rose-500 font-bold">{passedDays}일</span> 되었습니다.</>;
+    descriptionText = (
+      <>
+        상엽 <span className="text-rose-400 text-xs mx-0.5">♥</span> 진솔이 함께한 지{' '}
+        <span className="whitespace-nowrap">
+          <span className="text-rose-500 font-bold">{passedDays}일</span> 되었습니다.
+        </span>
+      </>
+    );
   }
 
   return (
@@ -672,7 +694,7 @@ export default function WeddingInvitation() {
           </div>
         ))}
       </div>
-      <p className="text-[15px] text-gray-600 font-medium mt-2">
+      <p className="text-[15px] text-gray-600 font-medium mt-2 break-keep">
         {descriptionText}
       </p>
     </div>
@@ -749,25 +771,25 @@ export default function WeddingInvitation() {
         </section>
 		
 		
-		{/* 🌟 새로 추가된 5. 갤러리 (GALLERY) 섹션 🌟 */}
+		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (지그재그 순서 복귀!) 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
-          
-          {/* 🚨 1. 제목만 FadeIn으로 감쌉니다 (충돌 방지) */}
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">GALLERY</h2>
           </FadeIn>
             
-          {/* 👇 알아서 빈 공간을 예쁘게 채워주는 진정한 메이슨리 레이아웃 👇 */}
-            <div className="columns-2 gap-3 space-y-3 mb-8 w-full">
-              {displayedPhotos.map((photo, index) => (
+          {/* 지그재그(1 2, 3 4) 순서를 강제하는 Flexbox 2단 레이아웃 */}
+          <div className="flex gap-3 mb-8 items-start w-full">
+            
+            {/* 왼쪽 기둥 (1, 3, 5, 7... 홀수 번째 사진들) */}
+            <div className="flex-1 flex flex-col gap-3">
+              {displayedPhotos.filter((_, i) => i % 2 === 0).map((photo, index) => (
                 <motion.div
                   key={photo.id}
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "50px" }}
                   transition={{ duration: 0.4 }}
-                  // break-inside-avoid 옵션이 사진이 반으로 잘리는 버그를 완벽히 막아줍니다
-                  className={`relative w-full inline-block break-inside-avoid ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
                 >
@@ -776,33 +798,59 @@ export default function WeddingInvitation() {
                     alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                     fill
                     quality={60} 
-                    priority={index < 4} // 상위 4장만 미리 로딩
+                    priority={index < 2} // 상위 2장 미리 로딩
                     className="object-cover"
                     sizes="(max-w: 480px) 50vw, 240px"
                   />
                 </motion.div>
               ))}
             </div>
-			
-			{/* 👇 2. 화면엔 안 보이지만 브라우저가 몰래 사진을 다운로드하는 '투명 망토' 영역 👇 */}
-            {!showAllGallery && preloadGallery && (
-              <div className="absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none -z-10">
-                {/* 22장을 다 부르면 데이터 낭비니, 버튼을 눌렀을 때 당장 눈에 보일 '다음 6장'만 미리 가져옵니다 */}
-                {galleryPhotos.slice(6, 12).map((photo) => (
+
+            {/* 오른쪽 기둥 (2, 4, 6, 8... 짝수 번째 사진들) */}
+            <div className="flex-1 flex flex-col gap-3">
+              {displayedPhotos.filter((_, i) => i % 2 === 1).map((photo, index) => (
+                <motion.div
+                  key={photo.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "50px" }}
+                  transition={{ duration: 0.4 }}
+                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                  onClick={() => setSelectedPhotoIndex(photo.id)}
+                >
                   <Image
-                    key={`preload-${photo.id}`}
                     src={photo.src}
-                    alt="preload"
+                    alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                     fill
-                    quality={60}
+                    quality={60} 
+                    priority={index < 2} 
+                    className="object-cover"
                     sizes="(max-w: 480px) 50vw, 240px"
                   />
-                ))}
-              </div>
-            )}	
+                </motion.div>
+              ))}
+            </div>
 
+          </div>
 
-          {/* 🚨 3. 버튼도 따로 FadeIn으로 감쌉니다 */}
+          {/* 👇 2. 화면엔 안 보이지만 브라우저가 몰래 사진을 다운로드하는 '투명 망토' 영역 👇 */}
+          {!showAllGallery && preloadGallery && (
+            <div className="absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none -z-10">
+              {galleryPhotos.slice(6, 12).map((photo) => (
+                <Image
+                  key={`preload-${photo.id}`}
+                  src={photo.src}
+                  alt="preload"
+                  fill
+                  quality={60}
+                  sizes="(max-w: 480px) 50vw, 240px"
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 더보기 및 접기 버튼 (토글) */}
           <FadeIn>
             <button
               onClick={() => setShowAllGallery(!showAllGallery)}
