@@ -17,6 +17,66 @@ const RealPetalSVG = ({ color }: { color: string }) => (
   </svg>
 );
 
+
+// 👇 디테일이 살아있는 '진짜 월계수' 컴포넌트 (여백 불균형 해결!) 👇
+const PremiumTitleDecorator = ({ title }: { title: string }) => (
+  <div className="flex items-center justify-center mb-10 text-rose-300 w-full">
+    
+    {/* 왼쪽 진짜 월계수 잎사귀 */}
+    <svg width="36" height="14" viewBox="0 0 36 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 drop-shadow-sm">
+      <path d="M1 13S10 10 32 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+      <path d="M12 9C12 9 8 3 3 4C3 4 7 10 12 9Z" fill="currentColor"/>
+      <path d="M21 5.5C21 5.5 17 -0.5 12 0.5C12 0.5 16 6.5 21 5.5Z" fill="currentColor"/>
+      <path d="M30 2C30 2 26 -4 21 -3C21 -3 25 3 30 2Z" fill="currentColor"/>
+      <path d="M16 11C16 11 23 14 28 12C28 12 22 6 16 11Z" fill="currentColor"/>
+      <path d="M25 7.5C25 7.5 32 10.5 37 8.5C37 8.5 31 2.5 25 7.5Z" fill="currentColor"/>
+    </svg>
+
+    {/* 중간 제목 텍스트 */}
+    {/* ✨ 핵심: 자간(tracking) 때문에 오른쪽에 생긴 유령 여백만큼, 왼쪽에 pl-[0.3em]을 주어 물리적인 완벽 대칭을 만듭니다! ✨ */}
+    <h2 className="mx-5 pl-[0.3em] text-lg tracking-[0.3em] text-rose-400 font-medium whitespace-nowrap">
+      {title}
+    </h2>
+
+    {/* 오른쪽 진짜 월계수 잎사귀 (반전) */}
+    <svg width="36" height="14" viewBox="0 0 36 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 -scale-x-100 drop-shadow-sm">
+      <path d="M1 13S10 10 32 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+      <path d="M12 9C12 9 8 3 3 4C3 4 7 10 12 9Z" fill="currentColor"/>
+      <path d="M21 5.5C21 5.5 17 -0.5 12 0.5C12 0.5 16 6.5 21 5.5Z" fill="currentColor"/>
+      <path d="M30 2C30 2 26 -4 21 -3C21 -3 25 3 30 2Z" fill="currentColor"/>
+      <path d="M16 11C16 11 23 14 28 12C28 12 22 6 16 11Z" fill="currentColor"/>
+      <path d="M25 7.5C25 7.5 32 10.5 37 8.5C37 8.5 31 2.5 25 7.5Z" fill="currentColor"/>
+    </svg>
+
+  </div>
+);
+
+// 👇 깔끔하고 세련된 '호텔식 다이아몬드 라인' 컴포넌트 👇
+const PremiumTitleDecorator2 = ({ title }: { title: string }) => (
+  <div className="flex items-center justify-center w-full mb-10">
+    
+    {/* 왼쪽 선 & 다이아몬드 */}
+    <div className="flex items-center gap-3">
+      <div className="w-8 sm:w-12 h-[1px] bg-rose-300" />
+      <div className="w-1.5 h-1.5 rotate-45 bg-rose-400 opacity-80" />
+    </div>
+    
+    {/* 제목 텍스트 */}
+    <h2 className="mx-5 pl-[0.3em] text-lg tracking-[0.3em] text-rose-500 font-medium whitespace-nowrap">
+      {title}
+    </h2>
+    
+    {/* 오른쪽 다이아몬드 & 선 */}
+    <div className="flex items-center gap-3">
+      <div className="w-1.5 h-1.5 rotate-45 bg-rose-400 opacity-80" />
+      <div className="w-8 sm:w-12 h-[1px] bg-rose-300" />
+    </div>
+
+  </div>
+);
+
+
+
 // 부드럽게 나타나는 애니메이션 컴포넌트
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
@@ -361,15 +421,7 @@ const handleCopy = (account: string) => {
     });
   };
 
-// 👇 1. 카카오톡 SDK 초기화 (앱이 켜질 때 한 번만 실행) 👇
-  useEffect(() => {
-    // 🚨 치트키 발동: window를 any 타입으로 속여서 에러를 원천 차단합니다.
-    const win = window as any; 
-    
-    if (typeof window !== 'undefined' && win.Kakao && !win.Kakao.isInitialized()) {
-      win.Kakao.init('56f7bc15851d93fc13f4329030ee37fe'); 
-    }
-  }, []);
+
 
   // 👇 2. 카카오톡 공유하기 버튼 함수 👇
   const handleKakaoShare = () => {
@@ -564,7 +616,7 @@ const handleCopy = (account: string) => {
         {/* 2. 초대글 섹션 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">초 대 의 말</h2>
+            <PremiumTitleDecorator title="초 대 의 말"/>
             <p className="font-point2 leading-[1.6] text-[17px] mb-8">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
@@ -625,7 +677,7 @@ const handleCopy = (account: string) => {
 {/* 🌟 새로 추가된 3. WEDDING DATE 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-white lining-nums tabular-nums">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">예 식 일 시</h2>
+            <PremiumTitleDecorator title="예 식 일 시"/>
             
             {/* 1. 날짜 및 시간 강조 */}
             <div className="mb-12">
@@ -783,7 +835,7 @@ const handleCopy = (account: string) => {
         {/* 4. 장소 안내 섹션 (배경색 교차를 위해 #FAFAFA로 변경) */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">오 시 는 길</h2>
+            <PremiumTitleDecorator title="오 시 는 길"/>
             <div className="relative w-full aspect-[20/9] rounded-2xl overflow-hidden mb-10 shadow-sm mx-auto">
               <Image
                 src="/images/wedding_hall.jpg?v=2"
@@ -851,7 +903,7 @@ const handleCopy = (account: string) => {
 		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (지그재그 순서 복귀!) 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">웨 딩 사 진</h2>
+            <PremiumTitleDecorator title="웨 딩 사 진"/>
           </FadeIn>
             
           {/* 지그재그(1 2, 3 4) 순서를 강제하는 Flexbox 2단 레이아웃 */}
@@ -952,7 +1004,7 @@ const handleCopy = (account: string) => {
 		{/* 🌟 새로 추가된 6. 안내 사항 (INFORMATION) 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 bg-[#FAFAFA] text-center">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">알 리 는 말</h2>
+            <PremiumTitleDecorator title="알 리 는 말"/>
           </FadeIn>
 
           {/* 1. 식사 안내 카드 */}
@@ -982,7 +1034,7 @@ const handleCopy = (account: string) => {
               </div>
               <h3 className="font-bold text-gray-800 text-[17px] mb-4 font-point whitespace-nowrap">축하 화환 안내</h3>
               <p className="text-[14px] text-gray-600 leading-[1.8] break-keep">
-                호텔 인터불고 엑스코의 예식 규정상<br />
+                그랑파티오 홀의 예식 규정상<br />
                 <span className="font-medium text-gray-800 whitespace-nowrap">대형 축하 화환은 반입이 불가</span>합니다.<br />
                 <br />
                 두 사람의 시작을 축하해 주실 분들께서는<br />
@@ -997,7 +1049,7 @@ const handleCopy = (account: string) => {
         {/* 🌟 7. 마음 전하실 곳 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 bg-white">
           <FadeIn>
-            <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium whitespace-nowrap">마음 전하실 곳</h2>
+            <PremiumTitleDecorator2 title="마음 전하실 곳"/>
             <p className="text-center text-sm text-gray-500 mb-10 leading-relaxed break-keep">
               참석이 어려우신 분들을 위해<br />
               계좌번호를 기재하였습니다.<br />
@@ -1032,7 +1084,7 @@ const handleCopy = (account: string) => {
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
                           <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑 아버지</p>
-                          <p className="font-medium text-gray-800 tracking-wide">농협  123-4567-8901-23  장규암</p>
+                          <p className="font-medium text-gray-800 tracking-wide">123-4567-8901-23 <br />신한은행  장규암</p>
                         </div>
                         <button 
                           onClick={() => handleCopy('1234567890123')} // 실제 복사될 계좌번호 숫자 입력
@@ -1046,10 +1098,10 @@ const handleCopy = (account: string) => {
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
                           <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑 어머니</p>
-                          <p className="font-medium text-gray-800 tracking-wide">대구은행  133-08-244-748  라말분</p>
+                          <p className="font-medium text-gray-800 tracking-wide">133-08-244-748 <br />대구은행  라말분</p>
                         </div>
                         <button 
-                          onClick={() => handleCopy('1234567890123')}
+                          onClick={() => handleCopy('13308244748')}
                           className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
                         >
                           <Copy size={14} /> 복사
@@ -1060,10 +1112,10 @@ const handleCopy = (account: string) => {
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑</p>
-                          <p className="font-medium text-gray-800 tracking-wide">농협은행  352-02785192-43  장상엽</p>
+                          <p className="font-medium text-gray-800 tracking-wide">352-02785192-43 <br />농협은행  장상엽</p>
                         </div>
                         <button 
-                          onClick={() => handleCopy('1234567890123')}
+                          onClick={() => handleCopy('3520278519243')}
                           className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
                         >
                           <Copy size={14} /> 복사
@@ -1156,7 +1208,13 @@ const handleCopy = (account: string) => {
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" 
           integrity="sha384-TiCmbV6AjoJiF4V/W5jcRfsN8Bf8tG7F8bZqD0+zD31Q1g/Q1a4Fv6H0Aom/QeR" 
           crossOrigin="anonymous" 
-          strategy="lazyOnload"
+          // 스크립트 다운로드가 완벽히 끝난 직후에 안전하게 초기화를 실행합니다!
+          onLoad={() => {
+            const win = window as any;
+            if (win.Kakao && !win.Kakao.isInitialized()) {
+              win.Kakao.init('004f26b5647c72e1c527866f717d328b');
+            }
+          }}
         />
 
         {/* 🌟 8. 푸터 🌟 */}
