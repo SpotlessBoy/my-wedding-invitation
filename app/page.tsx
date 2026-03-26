@@ -139,15 +139,24 @@ export default function WeddingInvitation() {
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
-  // 갤러리 이미지 데이터 (총 28장 예시)
-  // aspect 속성을 다르게 주어 가로/세로가 자연스럽게 섞이는 메이슨리 레이아웃을 만듭니다.
-  const galleryPhotos = Array.from({ length: 28 }).map((_, i) => ({
-    id: i,
-    src: `/images/gallery/${i + 1}.jpg?v=5`, // public/images/gallery/ 폴더에 1.jpg~28.jpg 저장 필요
-    aspect: i % 4 === 0 ? 'aspect-[4/3]' : i % 7 === 0 ? 'aspect-square' : 'aspect-[3/4]', 
-  }));
+  // ✅ 1. 가로형(풍경 비율) 사진 번호를 여기에 적어주세요! (1번부터 28번 중)
+  // 예시: 8번, 10번, 18번 사진이 가로형일 경우
+  const landscapePhotoIds = [8, 10, 18]; 
 
-  const displayedPhotos = showAllGallery ? galleryPhotos : galleryPhotos.slice(0, 5); // 처음엔 6장만 노출
+  // 갤러리 이미지 데이터
+  const galleryPhotos = Array.from({ length: 28 }).map((_, i) => {
+    const photoNumber = i + 1;
+    // 배열에 있는 번호면 가로형(4/3), 아니면 세로형(3/4) 비율 자동 적용
+    const isLandscape = landscapePhotoIds.includes(photoNumber);
+    
+    return {
+      id: i,
+      src: `/images/gallery_v2/${photoNumber}.jpg`,
+      aspect: isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]', 
+    };
+  });
+
+  const displayedPhotos = showAllGallery ? galleryPhotos : galleryPhotos.slice(0, 6); // 처음엔 6장 노출 (짝수가 예쁨)
 
   // 스와이프 및 버튼 넘김 처리 함수
   const handleNextPhoto = (e: React.MouseEvent) => {
@@ -273,8 +282,11 @@ export default function WeddingInvitation() {
 
   // 1. 네이버 지도: 앱 없으면 -> 모바일 웹 길찾기로 이동
   const handleNaverMap = () => {
+    // 앱 호출용 스킴 (도착지: 인터불고 엑스코)
     const scheme = `nmap://route/public?dlat=35.9069985378003&dlng=128.611285546387&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&appname=wedding`;
-    const fallbackWebUrl = `https://m.map.naver.com/route.nhn?menu=route&ena=${encodeURIComponent('호텔 인터불고 엑스코')}&ex=128.611285546387&ey=35.9069985378003&pathType=0`;
+    
+    // 👇 도착지가 완벽하게 입력되는 '신형 네이버 지도 웹 URL' (출발지 텅 빈칸, 도착지 세팅 완료)
+    const fallbackWebUrl = `https://map.naver.com/p/directions/-/128.611285546387,35.9069985378003,${encodeURIComponent('호텔 인터불고 엑스코')}/-/car`;
 
     window.location.href = scheme;
 
@@ -721,72 +733,41 @@ export default function WeddingInvitation() {
 		
 		{/* 🌟 새로 추가된 5. 갤러리 (GALLERY) 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
+          
+          {/* 🚨 1. 제목만 FadeIn으로 감쌉니다 (충돌 방지) */}
           <FadeIn>
             <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">GALLERY</h2>
+          </FadeIn>
             
-            {/* 메이슨리(Masonry) 레이아웃 그리드 */}
-            {/* CSS columns-2를 사용하여 세로로 흐르듯 자연스럽게 빈 공간을 채웁니다 */}
-            {/* CSS columns-2 버그를 완벽히 회피하는 Flexbox 2단 분리 레이아웃 */}
-            <div className="flex gap-3 mb-8 items-start">
-              
-              {/* 왼쪽 기둥 (인덱스 0, 2, 4...) */}
-              <div className="flex-1 flex flex-col gap-3">
-                {displayedPhotos.filter((_, i) => i % 2 === 0).map((photo, index) => (
-                  <motion.div
-                    key={photo.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                    // 다시 텐션감 있는 터치 모션(active:scale-95)을 부활시킵니다!
-                    className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
-                    style={{ WebkitTapHighlightColor: 'transparent' }}
-                    onClick={() => setSelectedPhotoIndex(photo.id)}
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
-                      fill
-					  unoptimized={true}
-                      // quality={50}
-                      priority={index < 5} // 왼쪽 줄 상위 5장 미리 로딩
-                      className="object-cover"
-                      sizes="(max-w: 480px) 50vw, 240px"
-                    />
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* 오른쪽 기둥 (인덱스 1, 3, 5...) */}
-              <div className="flex-1 flex flex-col gap-3">
-                {displayedPhotos.filter((_, i) => i % 2 === 1).map((photo, index) => (
-                  <motion.div
-                    key={photo.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                    className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
-                    style={{ WebkitTapHighlightColor: 'transparent' }}
-                    onClick={() => setSelectedPhotoIndex(photo.id)}
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
-                      fill
-					  unoptimized={true}
-                      // quality={50}
-                      priority={index < 5} // 오른쪽 줄 상위 5장 미리 로딩
-                      className="object-cover"
-                      sizes="(max-w: 480px) 50vw, 240px"
-                    />
-                  </motion.div>
-                ))}
-              </div>
-
+          {/* 👇 알아서 빈 공간을 예쁘게 채워주는 진정한 메이슨리 레이아웃 👇 */}
+            <div className="columns-2 gap-3 space-y-3 mb-8 w-full">
+              {displayedPhotos.map((photo, index) => (
+                <motion.div
+                  key={photo.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "50px" }}
+                  transition={{ duration: 0.4 }}
+                  // break-inside-avoid 옵션이 사진이 반으로 잘리는 버그를 완벽히 막아줍니다
+                  className={`relative w-full inline-block break-inside-avoid ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                  onClick={() => setSelectedPhotoIndex(photo.id)}
+                >
+                  <Image
+                    src={photo.src}
+                    alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
+                    fill
+                    quality={60} 
+                    priority={index < 4} // 상위 4장만 미리 로딩
+                    className="object-cover"
+                    sizes="(max-w: 480px) 50vw, 240px"
+                  />
+                </motion.div>
+              ))}
             </div>
 
-            {/* 더보기 및 접기 버튼 (토글) */}
+          {/* 🚨 3. 버튼도 따로 FadeIn으로 감쌉니다 */}
+          <FadeIn>
             <button
               onClick={() => setShowAllGallery(!showAllGallery)}
               className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-50 text-gray-600 rounded-full font-medium text-[15px] border border-gray-200 transition-colors active:bg-gray-100 mt-4"
@@ -803,8 +784,8 @@ export default function WeddingInvitation() {
                 </>
               )}
             </button>
-            
           </FadeIn>
+            
         </section>
 		
 		
