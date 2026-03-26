@@ -546,12 +546,13 @@ const handleCopy = (account: string) => {
         {/* 2. 초대글 섹션 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">INVITATION</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">초 대 의 말</h2>
             <p className="font-point2 leading-[1.6] text-[17px] mb-8">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
               그대 생각 내게 머물므로<br />
-			  나의 세상은 빛나는 세상이 됩니다<br />
+			  나의 세상은 빛나는 세상이 됩니다<br /> </p>
+			  <p className="font-point2 leading-[0] text-[17px] mb-10">
 			  - 나태주, &lt;들길을 걸으며&gt; -
               </p>
 			              
@@ -606,7 +607,7 @@ const handleCopy = (account: string) => {
 {/* 🌟 새로 추가된 3. WEDDING DATE 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-white lining-nums tabular-nums">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">WEDDING DATE</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">예 식 일 시</h2>
             
             {/* 1. 날짜 및 시간 강조 */}
             <div className="mb-12">
@@ -764,7 +765,7 @@ const handleCopy = (account: string) => {
         {/* 4. 장소 안내 섹션 (배경색 교차를 위해 #FAFAFA로 변경) */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">LOCATION</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">오 시 는 길</h2>
             <div className="relative w-full aspect-[20/9] rounded-2xl overflow-hidden mb-10 shadow-sm mx-auto">
               <Image
                 src="/images/wedding_hall.jpg?v=2"
@@ -832,7 +833,7 @@ const handleCopy = (account: string) => {
 		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (지그재그 순서 복귀!) 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">GALLERY</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">웨 딩 사 진</h2>
           </FadeIn>
             
           {/* 지그재그(1 2, 3 4) 순서를 강제하는 Flexbox 2단 레이아웃 */}
@@ -933,7 +934,7 @@ const handleCopy = (account: string) => {
 		{/* 🌟 새로 추가된 6. 안내 사항 (INFORMATION) 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 bg-[#FAFAFA] text-center">
           <FadeIn>
-            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">INFORMATION</h2>
+            <h2 className="text-lg tracking-[0.3em] text-rose-400 mb-10 font-medium whitespace-nowrap">알 리 는 말</h2>
           </FadeIn>
 
           {/* 1. 식사 안내 카드 */}
@@ -978,11 +979,11 @@ const handleCopy = (account: string) => {
         {/* 🌟 7. 마음 전하실 곳 섹션 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-8 bg-white">
           <FadeIn>
-            <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium whitespace-nowrap">FOR YOUR HEART</h2>
+            <h2 className="text-sm tracking-[0.3em] text-rose-400 mb-10 text-center font-medium whitespace-nowrap">마음 전하실 곳</h2>
             <p className="text-center text-sm text-gray-500 mb-10 leading-relaxed break-keep">
               참석이 어려우신 분들을 위해<br />
               계좌번호를 기재하였습니다.<br />
-              너른 양해 부탁드립니다.
+              너그러이 양해 부탁드립니다.
             </p>
 
             {/* 1. 신랑측 계좌 */}
@@ -1027,7 +1028,7 @@ const handleCopy = (account: string) => {
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
                           <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑 어머니</p>
-                          <p className="font-medium text-gray-800 tracking-wide">대구은행  123-4567-8901-23  라말분</p>
+                          <p className="font-medium text-gray-800 tracking-wide">대구은행  133-08-244-748  라말분</p>
                         </div>
                         <button 
                           onClick={() => handleCopy('1234567890123')}
@@ -1143,7 +1144,7 @@ const handleCopy = (account: string) => {
         {/* 🌟 8. 푸터 🌟 */}
         <footer className="relative z-10 -mt-px py-12 bg-white text-center border-t border-gray-50">
           <FadeIn>
-            <div className="flex justify-center gap-1 mb-8">
+            <div className="flex justify-center gap-15 mb-8">
               
               {/* 카카오톡 공유 버튼 */}
               <button 
@@ -1153,7 +1154,7 @@ const handleCopy = (account: string) => {
                 <div className="w-14 h-14 bg-[#FEE500] rounded-full flex items-center justify-center text-black shadow-sm">
                   <MessageCircle size={22} fill="currentColor" />
                 </div>
-                카톡 공유
+                카카오톡 공유
               </button>
 
               {/* 링크 복사 버튼 */}
@@ -1164,7 +1165,7 @@ const handleCopy = (account: string) => {
                 <div className="w-14 h-14 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
                   <Copy size={22} />
                 </div>
-                링크 복사
+                청첩장 복사
               </button>
 
             </div>
