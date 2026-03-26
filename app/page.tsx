@@ -104,12 +104,12 @@ export default function WeddingInvitation() {
   }, [showIntro]);
   
   
-  // 👇 새로 추가할 '사파리 확대 원천 차단' 방어막 👇
+  // 👇 🚨 아이폰 사파리 확대 완벽 원천 차단 🚨 👇
   useEffect(() => {
-    // 1. 두 손가락 핀치 줌(Pinch Zoom) 차단
+    // 1. 두 손가락 핀치 줌(Pinch Zoom) 차단 (touchmove 뿐만 아니라 touchstart도 차단)
     const preventPinchZoom = (e: TouchEvent) => {
       if (e.touches.length > 1) {
-        e.preventDefault(); // 두 손가락이 닿으면 브라우저의 기본 확대 동작을 죽여버립니다.
+        e.preventDefault();
       }
     };
 
@@ -117,20 +117,35 @@ export default function WeddingInvitation() {
     let lastTouchEnd = 0;
     const preventDoubleTapZoom = (e: TouchEvent) => {
       const now = new Date().getTime();
-      // 0.3초(300ms) 안에 다시 터치(더블 탭)가 감지되면 동작을 죽입니다.
       if (now - lastTouchEnd <= 300) {
         e.preventDefault();
       }
       lastTouchEnd = now;
     };
 
-    // passive: false 옵션을 반드시 주어야 e.preventDefault()가 뚫리지 않고 작동합니다.
+    // 3. 사파리 전용 뒷문(Gesture) 완벽 차단
+    const preventGesture = (e: Event) => {
+      e.preventDefault();
+    };
+
+    // 표준 터치 이벤트 방어
+    document.addEventListener('touchstart', preventPinchZoom, { passive: false });
     document.addEventListener('touchmove', preventPinchZoom, { passive: false });
     document.addEventListener('touchend', preventDoubleTapZoom, { passive: false });
 
+    // 사파리 독자적 제스처 이벤트 방어 (TS 에러 방지를 위해 as any 처리)
+    document.addEventListener('gesturestart', preventGesture as any, { passive: false });
+    document.addEventListener('gesturechange', preventGesture as any, { passive: false });
+    document.addEventListener('gestureend', preventGesture as any, { passive: false });
+
     return () => {
+      document.removeEventListener('touchstart', preventPinchZoom);
       document.removeEventListener('touchmove', preventPinchZoom);
       document.removeEventListener('touchend', preventDoubleTapZoom);
+      
+      document.removeEventListener('gesturestart', preventGesture as any);
+      document.removeEventListener('gesturechange', preventGesture as any);
+      document.removeEventListener('gestureend', preventGesture as any);
     };
   }, []);
   
@@ -1013,7 +1028,7 @@ const handleCopy = (account: string) => {
                       {/* 신랑 아버지 */}
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
-                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑 아버지</p>
+                          <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑 아버지</p>
                           <p className="font-medium text-gray-800 tracking-wide">농협  123-4567-8901-23  장규암</p>
                         </div>
                         <button 
@@ -1027,7 +1042,7 @@ const handleCopy = (account: string) => {
                       {/* 신랑 어머니 */}
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
-                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑 어머니</p>
+                          <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑 어머니</p>
                           <p className="font-medium text-gray-800 tracking-wide">대구은행  133-08-244-748  라말분</p>
                         </div>
                         <button 
@@ -1041,7 +1056,7 @@ const handleCopy = (account: string) => {
                       {/* 신랑 본인 */}
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신랑</p>
+                          <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑</p>
                           <p className="font-medium text-gray-800 tracking-wide">농협은행  352-02785192-43  장상엽</p>
                         </div>
                         <button 
@@ -1085,7 +1100,7 @@ const handleCopy = (account: string) => {
                       {/* 신부 아버지 */}
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
-                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신부 아버지</p>
+                          <p className="text-rose-500 text-[13px] mb-1 font-medium">신부 아버지</p>
                           <p className="font-medium text-gray-800 tracking-wide">대구 123-4567-8901-23 박주득</p>
                         </div>
                         <button 
@@ -1099,7 +1114,7 @@ const handleCopy = (account: string) => {
                       {/* 신부 어머니 */}
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
-                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신부 어머니</p>
+                          <p className="text-rose-500 text-[13px] mb-1 font-medium">신부 어머니</p>
                           <p className="font-medium text-gray-800 tracking-wide">우리 123-4567-8901-23 서정남</p>
                         </div>
                         <button 
@@ -1113,7 +1128,7 @@ const handleCopy = (account: string) => {
                       {/* 신부 본인 */}
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="text-gray-500 text-[13px] mb-1 font-medium">신부</p>
+                          <p className="text-rose-500 text-[13px] mb-1 font-medium">신부</p>
                           <p className="font-medium text-gray-800 tracking-wide">카카오뱅크 123-4567-8901-23 박진솔</p>
                         </div>
                         <button 
