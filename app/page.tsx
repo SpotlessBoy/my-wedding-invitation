@@ -9,7 +9,6 @@ import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
 import Script from 'next/script';
 
 
-
 const brightWeddingColors = ['#FFD1DC', '#FFFFE0', '#FFDAB9', '#FFFFF0', '#FFB6C1', '#FFF8DC'];
 // 하트가 아닌 진짜 '꽃잎(Teardrop)' 모양 SVG
 const RealPetalSVG = ({ color }: { color: string }) => (
@@ -364,16 +363,20 @@ const handleCopy = (account: string) => {
 
 // 👇 1. 카카오톡 SDK 초기화 (앱이 켜질 때 한 번만 실행) 👇
   useEffect(() => {
-    // window 객체에 Kakao가 있고, 아직 초기화되지 않았다면 실행합니다.
-    if (typeof window !== 'undefined' && window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init('56f7bc15851d93fc13f4329030ee37fe'); // 🚨 주의: 나중에 꼭 본인의 키로 바꿔야 합니다!
+    // 🚨 치트키 발동: window를 any 타입으로 속여서 에러를 원천 차단합니다.
+    const win = window as any; 
+    
+    if (typeof window !== 'undefined' && win.Kakao && !win.Kakao.isInitialized()) {
+      win.Kakao.init('56f7bc15851d93fc13f4329030ee37fe'); 
     }
   }, []);
 
   // 👇 2. 카카오톡 공유하기 버튼 함수 👇
   const handleKakaoShare = () => {
-    if (typeof window !== 'undefined' && window.Kakao && window.Kakao.isInitialized()) {
-      window.Kakao.Share.sendDefault({
+    const win = window as any; // 🚨 여기도 치트키 발동!
+
+    if (typeof window !== 'undefined' && win.Kakao && win.Kakao.isInitialized()) {
+      win.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
           title: '장상엽 ♥ 박진솔 결혼합니다',
