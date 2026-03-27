@@ -185,6 +185,25 @@ export default function WeddingInvitation() {
   }, []);
   
   
+  useEffect(() => {
+    // 만약 주소 끝에 우리가 달아놓은 꼬리표가 있다면?
+    if (typeof window !== 'undefined' && window.location.hash === '#calendar-section') {
+      
+      // 1. 답답한 꽃잎 인트로 화면 강제 종료! (바로 본문 진입)
+      setShowIntro(false); 
+      
+      // 2. 화면이 뜨자마자 맨 밑으로 스와아악~ 부드럽게 엘리베이터 탑승!
+      setTimeout(() => {
+        const footer = document.getElementById('calendar-section');
+        if (footer) {
+          // block: 'end'를 주면 푸터가 화면 맨 아래에 딱 맞게 스크롤됩니다.
+          footer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      }, 500); // 렌더링될 시간을 0.5초 벌어주고 스크롤
+    }
+  }, []); 
+  
+  
   
   
   // 👇 🚨 아이폰 사파리 확대 완벽 원천 차단 🚨 👇
@@ -457,7 +476,12 @@ const handleCopy = (account: string) => {
     if (isKakao) {
       // 카카오톡 웹뷰는 파일 다운로드를 막으므로, 공식 탈출 스킴을 사용해 외부 브라우저(사파리/크롬)로 보냅니다.
       alert('카카오톡 내부에서는 캘린더 저장이 제한됩니다.\n안전한 등록을 위해 기본 브라우저(사파리/크롬)로 이동합니다.\n이동 후 [일정 추가] 버튼을 한 번 더 눌러주세요!');
-      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(window.location.href);
+      
+      // ✨ 핵심: 기존 주소 뒤에 꼬리표(#calendar-section)를 붙여서 사파리로 넘깁니다! ✨
+      const cleanUrl = window.location.href.split('#')[0]; 
+      const targetUrl = cleanUrl + '#calendar-section';
+      
+      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(targetUrl);
       return; // 👇 아래의 다운로드 로직을 실행하지 않고 여기서 함수를 멈춥니다.
     }
 
@@ -693,7 +717,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
         {/* 2. 초대글 섹션 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
           <FadeIn>
-            <PremiumTitleDecorator title="초 대 의 말"/>
+            <PremiumTitleDecorator title="초 대 합 니 다"/>
             <p className="font-point2 leading-[1.6] text-[17px] mb-8">
               세상에 와 그대를 만난 건<br />
               내게 얼마나 행운이었나<br />
@@ -977,7 +1001,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
         </section>
 		
 		
-		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (지그재그 순서 복귀!) 🌟 */}
+		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (부드러운 지그재그 스크롤!) 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
           <FadeIn>
             <PremiumTitleDecorator title="웨 딩 사 진"/>
@@ -991,10 +1015,13 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               {displayedPhotos.filter((_, i) => i % 2 === 0).map((photo, index) => (
                 <motion.div
                   key={photo.id}
-                  initial={{ opacity: 0, y: 15 }}
+                  // ✨ 핵심 수정: 시작 위치를 살짝 더 낮춰서(y: 20) 올라오는 느낌을 강조
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "50px" }}
-                  transition={{ duration: 0.4 }}
+                  // ✨ 핵심 수정: 화면에 10% 나타났을 때 발동! (margin 삭제)
+                  viewport={{ once: true, amount: 0.1 }}
+                  // ✨ 핵심 수정: 왼쪽 기둥은 0.1초 딜레이, 부드러운 easeOut 곡선 적용
+                  transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
                   className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
@@ -1017,10 +1044,11 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               {displayedPhotos.filter((_, i) => i % 2 === 1).map((photo, index) => (
                 <motion.div
                   key={photo.id}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "50px" }}
-                  transition={{ duration: 0.4 }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  // ✨ 핵심 수정: 오른쪽 기둥은 왼쪽보다 0.15초 늦게(0.25초) 발동하여 지그재그로 우아하게 올라옴!
+                  transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
                   className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
@@ -1040,7 +1068,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
 
           </div>
 
-          {/* 👇 2. 화면엔 안 보이지만 브라우저가 몰래 사진을 다운로드하는 '투명 망토' 영역 👇 */}
+          {/* 👇 화면엔 안 보이지만 브라우저가 몰래 사진을 다운로드하는 '투명 망토' 영역 (그대로 유지) 👇 */}
           {!showAllGallery && preloadGallery && (
             <div className="absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none -z-10">
               {galleryPhotos.slice(6, 12).map((photo) => (
@@ -1321,7 +1349,8 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
         
 
         {/* 🌟 8. 푸터 (리마인드 기능 추가) 🌟 */}
-        <footer className="relative z-20 -mt-2 py-12 bg-white text-center border-t border-gray-50">
+        {/* 👇 수정: 태그 안에 id="calendar-section" 을 추가했습니다 👇 */}
+        <footer id="calendar-section" className="relative py-12 text-center border-t border-gray-50">
           <FadeIn>
             {/* 버튼이 3개가 되므로 간격을 gap-8 정도로 알맞게 조절합니다 */}
             <div className="flex justify-center gap-8 mb-8">
