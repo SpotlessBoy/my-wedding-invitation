@@ -417,43 +417,73 @@ export default function WeddingInvitation() {
   ];
 
 
-// 👇 버튼 클릭 핸들러 추가 👇
-
-  // 1. 네이버 지도: 앱 없으면 -> 모바일 웹 길찾기로 이동
+// 👇 1. 네이버 지도: 카카오톡 인앱 브라우저 완벽 대응 👇
   const handleNaverMap = () => {
-    // 앱 호출용 스킴 (도착지: 인터불고 엑스코)
-    const scheme = `nmap://route/public?dlat=35.9069985378003&dlng=128.611285546387&dname=${encodeURIComponent('호텔 인터불고 엑스코')}&appname=wedding`;
-    
-    // 👇 도착지가 완벽하게 입력되는 '신형 네이버 지도 웹 URL' (출발지 텅 빈칸, 도착지 세팅 완료)
-    const fallbackWebUrl = `https://map.naver.com/p/directions/-/128.611285546387,35.9069985378003,${encodeURIComponent('호텔 인터불고 엑스코')}/-/car`;
+    const dlat = '35.9069985378003';
+    const dlng = '128.611285546387';
+    const dname = encodeURIComponent('호텔 인터불고 엑스코');
+    const appname = 'wedding';
 
-    window.location.href = scheme;
+    // 기본 스킴 및 폴백 URL
+    const scheme = `nmap://route/public?dlat=${dlat}&dlng=${dlng}&dname=${dname}&appname=${appname}`;
+    const fallbackWebUrl = `https://map.naver.com/p/directions/-/128.611285546387,35.9069985378003,${dname}/-/car`;
 
-    setTimeout(() => {
-      // 0.5초 뒤에도 브라우저가 화면에 활성화되어 있다면 (앱이 열리지 않음)
-      if (!document.hidden) {
-        window.open(fallbackWebUrl, '_blank');
-      }
-    }, 500);
+    // 사용자 환경(OS 및 브라우저) 판별
+    const ua = navigator.userAgent.toLowerCase();
+    const isKakao = ua.indexOf('kakaotalk') > -1;
+    const isAndroid = ua.indexOf('android') > -1;
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+
+    if (isKakao && isAndroid) {
+      // 📱 안드로이드 + 카카오톡: 안드로이드 전용 intent 스킴을 사용해야만 앱이 강제로 열립니다.
+      window.location.href = `intent://route/public?dlat=${dlat}&dlng=${dlng}&dname=${dname}&appname=${appname}#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;end`;
+    } else if (isKakao && isIOS) {
+      // 🍎 아이폰 + 카카오톡: 커스텀 스킴을 원천 차단하므로, 카카오톡 공식 탈출 스킴을 써서 외부 사파리로 보냅니다.
+      // 사파리로 열리면 네이버 지도의 유니버셜 링크가 작동해 자연스럽게 앱이 열립니다.
+      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(fallbackWebUrl);
+    } else {
+      // 🌐 일반 브라우저 (사파리, 크롬 등)
+      window.location.href = scheme;
+      setTimeout(() => {
+        // 0.5초 뒤에도 화면에 머물러 있다면 (앱 미설치) 웹 길찾기로 이동
+        if (!document.hidden) {
+          window.open(fallbackWebUrl, '_blank');
+        }
+      }, 500);
+    }
   };
 
-  // 2. 티맵: 앱 없으면 -> 앱스토어/플레이스토어로 이동
+  // 👇 2. 티맵: 카카오톡 인앱 브라우저 완벽 대응 👇
   const handleTmap = () => {
-    const scheme = 'tmap://route?goalname=호텔 인터불고 엑스코&goalx=128.611285546387&goaly=35.9069985378003';
+    const dname = encodeURIComponent('호텔 인터불고 엑스코');
+    const scheme = `tmap://route?goalname=${dname}&goalx=128.611285546387&goaly=35.9069985378003`;
     
-    // 사용자의 기기가 안드로이드인지 아이폰인지 판별
-    const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
+    // 사용자 환경 판별
+    const ua = navigator.userAgent.toLowerCase();
+    const isKakao = ua.indexOf('kakaotalk') > -1;
+    const isAndroid = ua.indexOf('android') > -1;
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+
     const storeUrl = isAndroid 
-      ? "market://details?id=com.skt.tmap.ku" // 안드로이드 플레이스토어
-      : "https://apps.apple.com/kr/app/id431589174"; // 아이폰 앱스토어
+      ? "market://details?id=com.skt.tmap.ku" 
+      : "https://apps.apple.com/kr/app/id431589174";
 
-    window.location.href = scheme;
-
-    setTimeout(() => {
-      if (!document.hidden) {
-        window.open(storeUrl, '_blank');
-      }
-    }, 500);
+    if (isKakao && isAndroid) {
+      // 📱 안드로이드 + 카카오톡: 티맵 intent 스킴
+      window.location.href = `intent://route?goalname=${dname}&goalx=128.611285546387&goaly=35.9069985378003#Intent;scheme=tmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.skt.tmap.ku;end`;
+    } else if (isKakao && isIOS) {
+      // 🍎 아이폰 + 카카오톡: 티맵은 별도 웹 길찾기가 없으므로 앱스토어 링크로 탈출시킵니다.
+      // 사파리에서 앱스토어 링크가 열리면 iOS가 자동으로 상단에 "T맵 앱 열기" 배너를 띄워줍니다.
+      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(storeUrl);
+    } else {
+      // 🌐 일반 브라우저
+      window.location.href = scheme;
+      setTimeout(() => {
+        if (!document.hidden) {
+          window.open(storeUrl, '_blank');
+        }
+      }, 500);
+    }
   };
 
 // 계좌번호 복사 관련
@@ -1187,10 +1217,10 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
                           <p className="text-blue-500 text-[13px] mb-1 font-medium">신랑 아버지</p>
-                          <p className="font-medium text-gray-800 tracking-wide">123-4567-8901-23 <br />신한은행  장규암</p>
+                          <p className="font-medium text-gray-800 tracking-wide">1002-713-171611 <br />우리은행  장규암</p>
                         </div>
                         <button 
-                          onClick={() => handleCopy('1234567890123')} // 실제 복사될 계좌번호 숫자 입력
+                          onClick={() => handleCopy('1002713171611')} // 실제 복사될 계좌번호 숫자 입력
                           className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
                         >
                           <Copy size={14} /> 복사
@@ -1259,7 +1289,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
                           <p className="text-rose-500 text-[13px] mb-1 font-medium">신부 아버지</p>
-                          <p className="font-medium text-gray-800 tracking-wide">대구 123-4567-8901-23 박주득</p>
+                          <p className="font-medium text-gray-800 tracking-wide">123-4567-8901-23 <br />대구은행  박주득</p>
                         </div>
                         <button 
                           onClick={() => handleCopy('1234567890123')}
@@ -1273,7 +1303,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                       <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                         <div>
                           <p className="text-rose-500 text-[13px] mb-1 font-medium">신부 어머니</p>
-                          <p className="font-medium text-gray-800 tracking-wide">우리 123-4567-8901-23 서정남</p>
+                          <p className="font-medium text-gray-800 tracking-wide">123-4567-8901-23 <br />우리은행  서정남</p>
                         </div>
                         <button 
                           onClick={() => handleCopy('1234567890123')}
@@ -1287,7 +1317,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="text-rose-500 text-[13px] mb-1 font-medium">신부</p>
-                          <p className="font-medium text-gray-800 tracking-wide">카카오뱅크 123-4567-8901-23 박진솔</p>
+                          <p className="font-medium text-gray-800 tracking-wide">123-4567-8901-23 <br />카카오뱅크  박진솔</p>
                         </div>
                         <button 
                           onClick={() => handleCopy('1234567890123')}
