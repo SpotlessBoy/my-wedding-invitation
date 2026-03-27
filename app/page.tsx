@@ -269,8 +269,8 @@ export default function WeddingInvitation() {
   
 
   // ✅ 1. 가로형(풍경 비율) 사진 번호를 여기에 적어주세요! (1번부터 28번 중)
-  // 예시: 8번, 10번, 18번 사진이 가로형일 경우
-  const landscapePhotoIds = [8, 9, 18]; 
+  // 예시: 4번, 9번, 18번 사진이 가로형일 경우
+  const landscapePhotoIds = [3, 6, 13, 16, 21, 24]; 
 
   // 갤러리 이미지 데이터
   const galleryPhotos = Array.from({ length: 28 }).map((_, i) => {
@@ -280,7 +280,7 @@ export default function WeddingInvitation() {
     
     return {
       id: i,
-      src: `/images/gallery_v3/${photoNumber}.jpg`,
+      src: `/images/gallery_v7/${photoNumber}.jpg`,
       aspect: isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]', 
     };
   });
@@ -1001,28 +1001,27 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
         </section>
 		
 		
-		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (부드러운 지그재그 스크롤!) 🌟 */}
+		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (충돌 해결! 100% 실크 스크롤) 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
           <FadeIn>
             <PremiumTitleDecorator title="웨 딩 사 진"/>
           </FadeIn>
             
-          {/* 지그재그(1 2, 3 4) 순서를 강제하는 Flexbox 2단 레이아웃 */}
           <div className="flex gap-3 mb-8 items-start w-full">
             
-            {/* 왼쪽 기둥 (1, 3, 5, 7... 홀수 번째 사진들) */}
+            {/* 왼쪽 기둥 */}
             <div className="flex-1 flex flex-col gap-3">
               {displayedPhotos.filter((_, i) => i % 2 === 0).map((photo, index) => (
                 <motion.div
                   key={photo.id}
-                  // ✨ 핵심 수정: 시작 위치를 살짝 더 낮춰서(y: 20) 올라오는 느낌을 강조
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  // ✨ 핵심 수정: 화면에 10% 나타났을 때 발동! (margin 삭제)
                   viewport={{ once: true, amount: 0.1 }}
-                  // ✨ 핵심 수정: 왼쪽 기둥은 0.1초 딜레이, 부드러운 easeOut 곡선 적용
                   transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
-                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  // ✨ 핵심 1: Tailwind의 active:scale 대신 Framer Motion의 whileTap 사용 ✨
+                  whileTap={{ scale: 0.95 }} 
+                  // ✨ 핵심 2: 충돌을 일으키던 'transform transition-transform active:scale-95' 완전 삭제! ✨
+                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer`}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
                 >
@@ -1031,7 +1030,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                     alt={`웨딩 갤러리 사진 ${photo.id + 1}`}
                     fill
                     quality={60} 
-                    priority={index < 2} // 상위 2장 미리 로딩
+                    priority={index < 2}
                     className="object-cover"
                     sizes="(max-w: 480px) 50vw, 240px"
                   />
@@ -1039,7 +1038,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               ))}
             </div>
 
-            {/* 오른쪽 기둥 (2, 4, 6, 8... 짝수 번째 사진들) */}
+            {/* 오른쪽 기둥 */}
             <div className="flex-1 flex flex-col gap-3">
               {displayedPhotos.filter((_, i) => i % 2 === 1).map((photo, index) => (
                 <motion.div
@@ -1047,9 +1046,11 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.1 }}
-                  // ✨ 핵심 수정: 오른쪽 기둥은 왼쪽보다 0.15초 늦게(0.25초) 발동하여 지그재그로 우아하게 올라옴!
                   transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
-                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer transform transition-transform active:scale-95`}
+                  // ✨ 핵심 1: Framer Motion의 터치 액션으로 통일 ✨
+                  whileTap={{ scale: 0.95 }}
+                  // ✨ 핵심 2: 충돌 클래스 완전 삭제! ✨
+                  className={`relative w-full ${photo.aspect} bg-gray-100 rounded-xl overflow-hidden shadow-sm cursor-pointer`}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => setSelectedPhotoIndex(photo.id)}
                 >
@@ -1068,7 +1069,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
 
           </div>
 
-          {/* 👇 화면엔 안 보이지만 브라우저가 몰래 사진을 다운로드하는 '투명 망토' 영역 (그대로 유지) 👇 */}
           {!showAllGallery && preloadGallery && (
             <div className="absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none -z-10">
               {galleryPhotos.slice(6, 12).map((photo) => (
@@ -1084,7 +1084,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
             </div>
           )}
 
-          {/* 더보기 및 접기 버튼 (토글) */}
           <FadeIn>
             <button
               onClick={() => setShowAllGallery(!showAllGallery)}
