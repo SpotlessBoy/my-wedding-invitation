@@ -485,6 +485,25 @@ export default function WeddingInvitation() {
       }, 500);
     }
   };
+  
+  // 👇 3. 카카오내비: 카카오 SDK를 활용한 다이렉트 호출 👇
+  const handleKakaoNavi = () => {
+    const win = window as any;
+
+    // 카카오 SDK가 정상적으로 로드되었는지 확인
+    if (typeof window !== 'undefined' && win.Kakao && win.Kakao.isInitialized()) {
+      win.Kakao.Navi.start({
+        name: '호텔 인터불고 엑스코', // 목적지 이름
+        x: 128.611285546387,        // 경도 (x)
+        y: 35.9069985378003,        // 위도 (y)
+        coordType: 'wgs84',         // 좌표계 기본값
+      });
+    } else {
+      // 만약 네트워크 문제로 카카오 SDK 로딩에 실패했다면, 안전망(Fallback)으로 기존 웹 링크 실행
+      window.open('https://map.kakao.com/link/to/호텔 인터불고 엑스코,35.9069985378003,128.611285546387');
+    }
+  };
+  
 
 // 계좌번호 복사 관련
 const handleCopy = (account: string) => {
@@ -1014,14 +1033,14 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
 				  티맵
 				  </button>
 
-                {/* 3. 카카오내비 (웹/앱 자동연결 링크) */}
-                <button 
-                  onClick={() => window.open('https://map.kakao.com/link/to/호텔 인터불고 엑스코,35.9069985378003,128.611285546387')}
-                  className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
-                >
-                  <Image src="/images/icon-kakao.png?v=2" alt="카카오내비" width={18} height={18} className="rounded-[4px]" />
-                  카카오내비
-                </button>
+                {/* 3. 카카오내비 (SDK 다이렉트 연결) */}
+				<button 
+					onClick={handleKakaoNavi} // 👈 여기를 수정했습니다!
+					className="flex-1 bg-white py-2.5 rounded-lg flex items-center justify-center gap-1.5 font-medium text-[13px] border border-gray-200 shadow-sm transition-colors active:bg-gray-50 text-gray-700"
+				>
+					<Image src="/images/icon-kakao.png?v=2" alt="카카오내비" width={18} height={18} className="rounded-[4px]" />
+					카카오내비
+				</button>
               </div>            
             {/* 👆 네비게이션 연동 섹션 끝 👆 */}
 			
