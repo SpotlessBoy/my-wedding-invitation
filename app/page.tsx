@@ -357,13 +357,16 @@ export default function WeddingInvitation() {
       document.addEventListener('touchmove', preventDefault, { passive: false });
     } else {
       document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'auto';
+      // 🚨 수정 전: document.body.style.touchAction = 'auto'; 
+      // 👇 수정 후: 사파리의 핀치 줌을 엔진 단에서 원천 차단하는 'pan-y' 적용 👇
+      document.body.style.touchAction = 'pan-y';
       document.removeEventListener('touchmove', preventDefault);
     }
     
     return () => {
       document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'auto';
+      // 👇 여기 있는 클린업 함수 안에도 똑같이 'pan-y'로 수정해 주세요! 👇
+      document.body.style.touchAction = 'pan-y';
       document.removeEventListener('touchmove', preventDefault);
     };
   }, [selectedPhotoIndex, showMapImage, showIntro]);
@@ -446,11 +449,19 @@ const handleCopy = (account: string) => {
   };
 
 
-// 👇 4. 스마트폰 캘린더 자동 리마인드 (일주일 전, 하루 전 자동 알람 포함!) 👇
+// 👇 4. 스마트폰 캘린더 자동 리마인드 (카카오톡 인앱 브라우저 강제 탈출 버전!) 👇
   const handleAddCalendar = () => {
-    // 캘린더 데이터 규격 안에 'VALARM(알람)' 설정을 추가합니다.
-    // -P1W : 1주 전 (1 Week)
-    // -P1D : 1일 전 (1 Day)
+    // 🚨 1. 하객이 지금 카카오톡 내부 브라우저로 보고 있는지 감지합니다.
+    const isKakao = navigator.userAgent.toLowerCase().indexOf('kakaotalk') > -1;
+
+    if (isKakao) {
+      // 카카오톡 웹뷰는 파일 다운로드를 막으므로, 공식 탈출 스킴을 사용해 외부 브라우저(사파리/크롬)로 보냅니다.
+      alert('카카오톡 내부에서는 캘린더 저장이 제한됩니다.\n안전한 등록을 위해 기본 브라우저(사파리/크롬)로 이동합니다.\n이동 후 [일정 추가] 버튼을 한 번 더 눌러주세요!');
+      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(window.location.href);
+      return; // 👇 아래의 다운로드 로직을 실행하지 않고 여기서 함수를 멈춥니다.
+    }
+
+    // 2. 카카오톡이 아니라면(사파리, 크롬) 정상적으로 캘린더 파일(.ics)을 생성하고 다운로드합니다.
     const icsData = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//YeopAndSol//WeddingInvitation//EN
@@ -462,19 +473,18 @@ DTEND;TZID=Asia/Seoul:20260607T143000
 LOCATION:호텔 인터불고 엑스코 2층 그랑파티오
 DESCRIPTION:두 사람의 빛나는 시작을 축복해 주세요.
 BEGIN:VALARM
-TRIGGER:-P1W
-ACTION:DISPLAY
-DESCRIPTION:장상엽 ♥ 박진솔 결혼식 일주일 전입니다!
-END:VALARM
-BEGIN:VALARM
 TRIGGER:-P1D
 ACTION:DISPLAY
 DESCRIPTION:내일은 장상엽 ♥ 박진솔 결혼식입니다!
 END:VALARM
+BEGIN:VALARM
+TRIGGER:-P7D
+ACTION:DISPLAY
+DESCRIPTION:장상엽 ♥ 박진솔 결혼식 일주일 전입니다!
+END:VALARM
 END:VEVENT
-END:VCALENDAR`.replace(/\n/g, '\r\n'); 
+END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루 전(-P1D)이 위로, 일주일 전(-P7D)이 아래로!
 
-    // 파일 다운로드 로직 (동일)
     const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -533,7 +543,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
   return (
     // 변경 후 (우클릭 방지 이벤트 및 Tailwind CSS 선택 방지 클래스 추가)
 	<main 
-		className="min-h-screen bg-[#FDFDFD] text-[#333333] selection:bg-rose-100 relative select-none [&_img]:pointer-events-none"
+		className="min-h-screen bg-[#FDFDFD] text-[#333333] selection:bg-rose-100 relative select-none touch-pan-y [&_img]:pointer-events-none"
 		onContextMenu={(e) => e.preventDefault()} // 우클릭 방지
 	>
 	
@@ -676,6 +686,9 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
           style={{ height: 'calc(var(--vh, 1vh) * 100)' }} 
           aria-hidden="true" 
         />
+		
+		{/* 👇 여기서부터 맨 끝 푸터까지 다 담아버리는 대왕 하얀 상자 오픈! z-10 부여 👇 */}
+        <div className="relative z-10 bg-white">
 
         {/* 2. 초대글 섹션 */}
         <section className="relative z-10 -mt-px py-24 px-8 text-center bg-[#FAFAFA]">
@@ -1099,11 +1112,10 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
               <h3 className="font-bold text-gray-800 text-[17px] mb-4 font-point whitespace-nowrap">축하 화환 안내</h3>
               <p className="text-[14px] text-gray-600 leading-[1.8] break-keep">
                 그랑파티오 홀의 예식 규정상<br />
-                <span className="font-medium text-gray-800 whitespace-nowrap">대형 축하 화환은 반입이 불가</span>합니다.<br />
-                <br />
-                두 사람의 시작을 축하해 주실 분들께서는<br />
-                <span className="text-rose-500 font-medium whitespace-nowrap">꽃바구니나 화분</span>으로 보내주시면<br />
-                더욱 감사한 마음으로 간직하겠습니다.
+                <span className="font-medium text-gray-800 whitespace-nowrap">대형 축하 화환은 반입이 제한</span>되어 있습니다.<br />
+				<br />
+                보내주시는 따뜻한 마음만으로도<br />
+				저희에게는 충분한 축복이 됩니다.
               </p>
             </div>
           </FadeIn>
@@ -1266,14 +1278,53 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
             
           </FadeIn>
         </section>
+		
+		{/* 👇 수정됨: 틈새 방어(-mt-[2px], z-20) & 뽀잉뽀잉 애니메이션 적용 👇 */}
+        <section className="relative z-20 -mt-[2px] py-16 px-8 bg-[#FAFAFA] text-center">
+          <FadeIn>
+            
+            {/* 1. 귀여운 도트(Pixel Art) 신랑 신부 무한 점프 애니메이션 */}
+            <motion.div 
+              className="relative w-[120px] h-[100px] mx-auto mb-6"
+              // ✨ 핵심 1: y축(위아래)으로 -15px만큼 튀어 오르는 동작 ✨
+              animate={{ y: [0, -15, 0] }} 
+              transition={{ 
+                duration: 1.2,        // 1.2초 동안 한 번 뜀
+                repeat: Infinity,     // 멈추지 않고 무한 반복!
+                ease: "easeInOut"     // 올라갈 때와 내려올 때 부드럽게 연결
+              }}
+            >
+              <Image 
+                src="/images/thanks_dot.png" 
+                alt="귀여운 신랑 신부의 감사 인사" 
+                fill
+                className="object-contain" 
+                sizes="120px"
+              />
+            </motion.div>
+						
+            {/* 디테일 포인트: 작고 소중한 로즈톤 하트 아이콘 */}
+            <div className="flex justify-center mt-5 text-rose-300">
+              <Heart size={16} fill="currentColor" className="animate-pulse" />
+            </div>
 
+            {/* 2. 진심을 담은 감사의 메세지 */}
+            <p className="font-point2 leading-relaxed text-[15px] text-gray-700 break-keep">
+              저희 두 사람의 빛나는 시작을<br />
+              멀리서, 또 가까이서 축복해주신<br />
+              <span className="text-rose-500 font-medium">모든 분께 마음 깊이 감사드립니다.</span><br />
+              서로 아끼고 배려하며 예쁘게 잘 살겠습니다.
+            </p>
+
+          </FadeIn>
+        </section>
         
 
         {/* 🌟 8. 푸터 (리마인드 기능 추가) 🌟 */}
-        <footer className="relative z-10 -mt-px py-12 bg-white text-center border-t border-gray-50">
+        <footer className="relative z-20 -mt-2 py-12 bg-white text-center border-t border-gray-50">
           <FadeIn>
-            {/* 버튼이 3개가 되므로 간격을 gap-6 정도로 알맞게 조절합니다 */}
-            <div className="flex justify-center gap-6 mb-8">
+            {/* 버튼이 3개가 되므로 간격을 gap-8 정도로 알맞게 조절합니다 */}
+            <div className="flex justify-center gap-8 mb-8">
               
               {/* 1. 카카오톡 공유 버튼 */}
               <button 
@@ -1283,7 +1334,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
                 <div className="w-14 h-14 bg-[#FEE500] rounded-full flex items-center justify-center text-black shadow-sm">
                   <MessageCircle size={22} fill="currentColor" />
                 </div>
-                카카오톡 공유
+                【카톡 공유】
               </button>
 
               {/* 2. 링크 복사 버튼 */}
@@ -1294,7 +1345,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
                 <div className="w-14 h-14 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
                   <Copy size={22} />
                 </div>
-                청첩장 복사
+                【청첩장 주소 복사】
               </button>
 
               {/* 👇 3. 새로 추가된 캘린더 리마인드 버튼 👇 */}
@@ -1305,7 +1356,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
                 <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-400 shadow-sm">
                   <CalendarIcon size={22} />
                 </div>
-                일정 추가
+                【알람 등록】
               </button>
 
             </div>
@@ -1316,7 +1367,11 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
           </FadeIn>
         </footer>
 
+{/* 👇 맨 끝에서 대왕 하얀 상자를 닫아줍니다! 👇 */}
+        </div>
+
       </div>
+	  
 
 
 	  {/* 👇 갤러리 라이트박스 (확대 모달) 👇 */}
