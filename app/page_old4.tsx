@@ -1318,6 +1318,20 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                         </button>
                       </div>
 
+                      {/* 신부 어머니 */}
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                        <div>
+                          <p className="text-rose-500 text-[13px] mb-1 font-medium">신부 어머니</p>
+                          <p className="font-medium text-gray-800 tracking-wide">123-4567-8901-23 <br />우리은행  서정남</p>
+                        </div>
+                        <button 
+                          onClick={() => handleCopy('1234567890123')}
+                          className="shrink-0 flex items-center gap-1.5 text-[12px] bg-white border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-600 active:scale-95 transition-transform"
+                        >
+                          <Copy size={14} /> 복사
+                        </button>
+                      </div>
+
                       {/* 신부 본인 */}
                       <div className="flex justify-between items-center">
                         <div>
