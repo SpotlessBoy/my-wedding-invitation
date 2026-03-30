@@ -279,7 +279,7 @@ export default function WeddingInvitation() {
     
     return {
       id: i,
-      src: `/images/gallery_v3/${photoNumber}.jpg`,
+      src: `/images/gallery_v4/${photoNumber}.jpg`,
       aspect: isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]', 
     };
   });
