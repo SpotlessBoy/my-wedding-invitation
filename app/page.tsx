@@ -268,19 +268,18 @@ export default function WeddingInvitation() {
   }, []);
   
 
-  // ✅ 1. 가로형(풍경 비율) 사진 번호를 여기에 적어주세요! (1번부터 28번 중)
-  // 예시: 4번, 9번, 18번 사진이 가로형일 경우
-  const landscapePhotoIds = [3, 6, 13, 16, 21, 24]; 
+  // ✅ 1. 가로형(풍경 비율) 사진 번호를 여기에 적어주세요! (1번부터 28번 중) 
+  const landscapePhotoIds = [3, 6, 9, 12, 17, 20, 24, 25]; 
 
   // 갤러리 이미지 데이터
-  const galleryPhotos = Array.from({ length: 28 }).map((_, i) => {
+  const galleryPhotos = Array.from({ length: 26 }).map((_, i) => {
     const photoNumber = i + 1;
     // 배열에 있는 번호면 가로형(4/3), 아니면 세로형(3/4) 비율 자동 적용
     const isLandscape = landscapePhotoIds.includes(photoNumber);
     
     return {
       id: i,
-      src: `/images/gallery_v7/${photoNumber}.jpg`,
+      src: `/images/gallery_v2/${photoNumber}.jpg`,
       aspect: isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]', 
     };
   });
@@ -785,7 +784,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               className="relative w-full aspect-[3/2] mx-auto mb-8 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
-                src="/images/sub_main3_v3.jpg" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
+                src="/images/sub_main3_v4.jpg" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
                 alt="lovers"
                 fill
                 quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
@@ -879,27 +878,9 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               </div>
             </div>
 			
-			{/* 👇 새로 추가되는 분위기 환기용 가로 스냅 사진 👇 */}
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }} // y축 이동을 추가해 주면 서서히 올라옵니다
-			  whileInView={{ opacity: 1, y: 0 }}
-			  viewport={{ once: false, amount: 0.1 }} // once: true를 once: false로 변경
-			  transition={{ duration: 0.8 }}
-              className="relative w-[100%] aspect-[3/2] mx-auto mb-10 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
-            >
-              <Image
-                src="/images/sub_date.jpg?v=3" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
-                alt="골목길 스냅이에욥"
-                fill
-                quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
-                className="object-cover object-center"
-                sizes="(max-w: 480px) 100vw, 480px"
-              />
-            </motion.div>
-            {/* 👆 추가된 스냅 사진 끝 👆 */}
-
-            
+			           
             {/* 3 & 4. 실시간 카운트다운 및 동적 메시지 */}
+			
 {isMounted && (() => {
   const now = new Date();
   const target = new Date('2026-06-07T12:30:00+09:00');
