@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "모바일 청첩장",
     images: [
       {
-        url: "/images/thumbnail.jpg", // 👈 메인 커버로 쓰신 예쁜 사진 경로!
+        url: "/images/thumbnail_v2.jpg", // 👈 메인 커버로 쓰신 예쁜 사진 경로!
         width: 512,
         height: 772,
         alt: "이쁜~ 스냅",
