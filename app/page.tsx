@@ -279,7 +279,7 @@ export default function WeddingInvitation() {
     
     return {
       id: i,
-      src: `/images/gallery_v2/${photoNumber}.jpg`,
+      src: `/images/gallery_v3/${photoNumber}.jpg`,
       aspect: isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]', 
     };
   });
@@ -784,7 +784,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               className="relative w-full aspect-[3/2] mx-auto mb-8 rounded-2xl overflow-hidden shadow-sm"
             >
               <Image
-                src="/images/sub_main3_v3.jpg" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
+                src="/images/sub_main3_v4.jpg" /* 👈 준비하신 가로형 스냅 사진 파일명으로 변경하세요 */
                 alt="lovers"
                 fill
                 quality={80} // 스크롤 시 로딩되므로 적절한 압축률 적용
