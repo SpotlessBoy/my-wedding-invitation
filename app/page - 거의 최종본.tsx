@@ -78,14 +78,13 @@ const PremiumTitleDecorator2 = ({ title }: { title: string }) => (
 
 
 // 부드럽게 나타나는 애니메이션 컴포넌트
-const FadeIn = ({ children, delay = 0, onViewportEnter }: { children: React.ReactNode; delay?: number; onViewportEnter?: () => void }) => (
+const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }} // 50은 화면 밖으로 튕겨 나가니, 부드러운 20px로 다듬어줍니다
     whileInView={{ opacity: 1, y: 0 }}
     // 👇 once: false로 반복을 살리고, amount를 0으로 낮춰 덜덜거림을 차단합니다 👇
     viewport={{ once: false, amount: 0 }} 
     transition={{ duration: 0.6, delay, ease: 'easeOut' }} // 거리가 짧아졌으니 속도도 0.6초로 텐션감 있게!
-	onViewportEnter={onViewportEnter} // 👈 화면에 진입하면 이벤트를 발생시키는 센서 장착!
   >
     {children}
   </motion.div>
@@ -126,7 +125,7 @@ export default function WeddingInvitation() {
   // 👇 2. 브라우저가 화면을 켠 직후(Client-side)에 랜덤 값을 계산합니다 👇
   useEffect(() => {
     const petals = [];
-    const count = 35; // 테두리를 감쌀 꽃잎 개수
+    const count = 60; // 테두리를 감쌀 꽃잎 개수
     for (let i = 0; i < count; i++) {
       const t = (i / count) * Math.PI * 2;
       // 하트 모양을 그리는 수학 공식 (x, y 좌표)
@@ -165,25 +164,25 @@ export default function WeddingInvitation() {
   
   
   // 👇 1. 절대 실패하지 않는 카카오톡 SDK 강제 주입 및 초기화 👇
-//  useEffect(() => {
-//    const win = window as any;
+  useEffect(() => {
+    const win = window as any;
     
     // 이미 카카오 스크립트가 있다면 중복해서 불러오지 않습니다.
-//    if (!win.Kakao) {
-//      const script = document.createElement('script');
-//      script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
-//      script.async = true;
+    if (!win.Kakao) {
+      const script = document.createElement('script');
+      script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
+      script.async = true;
       
       // 스크립트 다운로드가 끝나는 정확한 타이밍에 초기화 실행!
-//      script.onload = () => {
-//        if (win.Kakao && !win.Kakao.isInitialized()) {
-//          win.Kakao.init('004f26b5647c72e1c527866f717d328b'); 
-//        }
-//      };
-//      
-//      document.body.appendChild(script);
-//    }
-//  }, []);
+      script.onload = () => {
+        if (win.Kakao && !win.Kakao.isInitialized()) {
+          win.Kakao.init('004f26b5647c72e1c527866f717d328b'); 
+        }
+      };
+      
+      document.body.appendChild(script);
+    }
+  }, []);
   
   
   useEffect(() => {
@@ -259,8 +258,6 @@ export default function WeddingInvitation() {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   // 👇 1. 프리로딩 타이머 상태 추가 👇
   const [preloadGallery, setPreloadGallery] = useState(false);
-  // ✨ 새로 추가: 스크롤이 갤러리에 도달했는지 기억하는 상태 ✨
-  const [preloadFirstHighRes, setPreloadFirstHighRes] = useState(false);
 
   useEffect(() => {
     // 하객이 첫 화면을 보고 3초쯤 지났을 때, 백그라운드에서 다음 갤러리 사진 다운로드를 시작합니다.
@@ -621,18 +618,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
 		className="min-h-screen bg-[#FDFDFD] text-[#333333] selection:bg-rose-100 relative select-none touch-pan-y [&_img]:pointer-events-none"
 		onContextMenu={(e) => e.preventDefault()} // 우클릭 방지
 	>
-	
-	{/* ✨ 여기에 Next.js 전용 카카오 스크립트를 새로 추가합니다! ✨ */}
-      <Script 
-        src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-        strategy="lazyOnload" 
-        onLoad={() => {
-          if (window.Kakao && !window.Kakao.isInitialized()) {
-            window.Kakao.init('004f26b5647c72e1c527866f717d328b'); 
-          }
-        }}
-      />
-      {/* ✨ 추가 완료 ✨ */}
 	
 	
 	{/* 🌟 진짜 꽃잎들이 하트 모양 테두리를 이루는 오프닝 인트로 (통째로 덮어쓰기) 🌟 */}
@@ -1065,8 +1050,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
 		
 		{/* 🌟 5. 갤러리 (GALLERY) 섹션 (충돌 해결! 100% 실크 스크롤) 🌟 */}
         <section className="relative z-10 -mt-px py-24 px-6 bg-white text-center">
-          {/* 👇 FadeIn에 센서를 달아서, 화면에 보이면 프리로딩 시작 신호를 보냅니다 👇 */}
-          <FadeIn onViewportEnter={() => setPreloadFirstHighRes(true)}>
+          <FadeIn>
             <PremiumTitleDecorator title="갤 러 리"/>
           </FadeIn>
             
@@ -1581,15 +1565,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
           height={10} 
           priority 
         />
-		
-		{/* ✨ 새로 추가: 갤러리 섹션에 도달하면 1, 2번 고화질 원본 사진을 미리 캐싱합니다 ✨ */}
-        {preloadFirstHighRes && (
-          <>
-            <Image src={galleryPhotos[0].src} alt="preload high-res 1" width={10} height={10} unoptimized priority />
-            <Image src={galleryPhotos[1].src} alt="preload high-res 2" width={10} height={10} unoptimized priority />
-          </>
-        )}
-				
       </div>
 	  
 	  <AnimatePresence>
