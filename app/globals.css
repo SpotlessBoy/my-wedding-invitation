@@ -41,3 +41,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* 👇 아이폰 사파리 확대/축소 완벽 방어 마갑 👇 */
+html, body {
+  /* 수직 스크롤(pan-y)만 허용하고, 핀치 줌(확대)이나 더블 탭 확대 기능을 브라우저 엔진 단에서 원천 차단합니다. */
+  touch-action: pan-y;
+  
+  /* 가로 모드로 돌리거나 시스템 폰트 크기가 바뀌었을 때 글자가 강제로 커지는 현상 방지 */
+  -webkit-text-size-adjust: 100%;
+}
