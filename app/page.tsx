@@ -1025,21 +1025,23 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               </div>            
             {/* 👆 네비게이션 연동 섹션 끝 👆 */}
 			
-			{/* 👇 여기서부터 새로 복사해서 붙여넣으시면 됩니다 (주차 안내 박스) 👇 */}
-            <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-left">
-              <h3 className="font-bold text-gray-800 text-[15px] mb-3 flex items-center gap-2">
+			{/* 👇 수정된 주차 안내 박스 (가운데 정렬 & 양쪽 기둥) 👇 */}
+            <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-center">
+              <h3 className="font-bold text-gray-800 text-[15px] mb-3 flex items-center justify-center gap-2">
                 <div className="w-1.5 h-3.5 bg-rose-400 rounded-full" />
                 예식장 주차안내
+                <div className="w-1.5 h-3.5 bg-rose-400 rounded-full" />
               </h3>
               <p className="text-[14px] text-gray-600 leading-[1.7] break-keep mb-4">
-                호텔 지하 2층 ~ 지하 4층까지 예식 당일 <span className="text-rose-500 font-medium whitespace-nowrap">무료 주차 가능</span>하며, 호텔 주차장 만차 시 엑스코 주차장으로 안내해 드립니다.
+                호텔 지하 2층 ~ 지하 4층 <span className="text-rose-500 font-medium whitespace-nowrap">무료 주차 가능</span><br />
+                * 만차 시 외부 엑스코 주차장 안내
               </p>
               <div className="bg-gray-50 p-3.5 rounded-lg text-[13px] text-gray-500 leading-[1.6] border border-gray-100">
                 <span className="text-gray-700 font-bold tracking-tight">※ 외부 엑스코 주차 시 유의사항</span><br />
-                축의대 및 안내데스크에 구비된 <span className="text-gray-700 font-medium whitespace-nowrap">QR코드로 차량 등록</span>하셔야 2시간 무료주차가 적용되오니 유의하시기 바랍니다.
+                축의대 및 안내데스크의 <span className="text-gray-700 font-medium whitespace-nowrap">QR코드로<br />차량 등록</span>하셔야 2시간 무료주차 적용
               </div>
             </div>
-            {/* 👆 주차 안내 박스 끝 👆 */}			
+            {/* 👆 주차 안내 박스 끝 👆 */}		
 			
 			
           </FadeIn>
