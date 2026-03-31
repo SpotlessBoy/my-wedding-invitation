@@ -627,8 +627,9 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
         src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
         strategy="lazyOnload" 
         onLoad={() => {
-          if (window.Kakao && !window.Kakao.isInitialized()) {
-            window.Kakao.init('004f26b5647c72e1c527866f717d328b'); 
+          const win = window as any; // 👈 TypeScript 에러를 해결하는 마법의 치트키!
+          if (win.Kakao && !win.Kakao.isInitialized()) {
+            win.Kakao.init('004f26b5647c72e1c527866f717d328b');
           }
         }}
       />
