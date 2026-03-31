@@ -1036,7 +1036,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               </p>
               <div className="bg-gray-50 p-3.5 rounded-lg text-[13px] text-gray-500 leading-[1.6] border border-gray-100">
                 <span className="text-gray-700 font-bold tracking-tight">※ 외부 엑스코 주차 시 유의사항</span><br />
-                축의대 및 안내데스크에 구비된 <span className="text-gray-700 font-medium">QR코드로 차량 등록</span>하셔야 <br />2시간 무료주차가 적용되오니 유의하시기 바랍니다.
+                축의대 및 안내데스크에 구비된 <span className="text-gray-700 font-medium whitespace-nowrap">QR코드로 차량 등록</span>하셔야 2시간 무료주차가 적용되오니 유의하시기 바랍니다.
               </div>
             </div>
             {/* 👆 주차 안내 박스 끝 👆 */}			
