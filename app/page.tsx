@@ -1007,50 +1007,49 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
   }
 
   return (
-    <div className="bg-[#FAFAFA] rounded-2xl p-6 shadow-sm border border-gray-100">
-      {/* 상단 D-DAY 표시 */}
-      <div className="text-2xl font-bold text-rose-500 mb-4 tracking-tighter font-sans lining-nums tabular-nums">
-        {dDayText}
-      </div>
+    <> {/* 👈 카운터 박스와 폼을 형제로 나란히 두기 위해 빈 태그(Fragment)로 묶어줍니다 */}
+      
+      {/* 1. D-DAY 카운터 박스 */}
+      <div className="bg-[#FAFAFA] rounded-2xl p-6 shadow-sm border border-gray-100 w-full">
+        {/* 상단 D-DAY 표시 */}
+        <div className="text-2xl font-bold text-rose-500 mb-4 tracking-tighter font-sans lining-nums tabular-nums">
+          {dDayText}
+        </div>
 
-      <div className="flex justify-center items-center gap-3 mb-6">
-        {[
-          { label: 'DAYS', value: timeLeft.days },
-          { label: 'HOURS', value: timeLeft.hours },
-          { label: 'MINS', value: timeLeft.mins },
-          { label: 'SECS', value: timeLeft.secs },
-        ].map((item, idx) => (
-          <div key={idx} className="flex flex-col items-center">
-            <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl font-medium text-gray-800 mb-2 border border-gray-50">
-              {String(item.value).padStart(2, '0')}
-            </div>
-            <span className="text-[10px] text-gray-400 tracking-widest font-medium">{item.label}</span>
-          </div>
-        ))}
-      </div>
-      <p className="text-[15px] text-gray-600 font-medium mt-2 break-keep">
-        {descriptionText}
-      </p>
-	  
-	  
-	  {/* 👇 D-DAY 카운터 끝나는 부분 밑에 추가 👇 */}
-            
-            <div className="mt-8 border-t border-gray-100 pt-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <MessageCircle size={15} className="text-rose-400" />
-                <h3 className="font-medium text-blue-500 text-[15px]">예식 알림 메시지 받기</h3>
-				<MessageCircle size={15} className="text-rose-400 -scale-x-100" />
+        <div className="flex justify-center items-center gap-3 mb-6">
+          {[
+            { label: 'DAYS', value: timeLeft.days },
+            { label: 'HOURS', value: timeLeft.hours },
+            { label: 'MINS', value: timeLeft.mins },
+            { label: 'SECS', value: timeLeft.secs },
+          ].map((item, idx) => (
+            <div key={idx} className="flex flex-col items-center">
+              <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl font-medium text-gray-800 mb-2 border border-gray-50">
+                {String(item.value).padStart(2, '0')}
               </div>
+              <span className="text-[10px] text-gray-400 tracking-widest font-medium">{item.label}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[15px] text-gray-600 font-medium mt-2 break-keep">
+          {descriptionText}
+        </p>
+      </div>
+      
+      {/* 2. 박스 바깥으로 꺼낸 알림 메시지 예약 폼 */}
+      <div className="mt-12 w-full">
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <MessageCircle size={15} className="text-rose-400" />
+          <h3 className="font-medium text-gray-800 text-[15px]">예식 알림 메시지 받기</h3>          
+        </div>
 
-
-              {/* 👇 수정된 알림 메시지 폼 영역 👇 */}
         {isSubmitted ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} 
             animate={{ opacity: 1, scale: 1 }} 
             className="bg-rose-50 text-rose-500 p-4 rounded-xl text-[14px] font-medium"
           >
-            메시지 전송 예약(1주일전)이 완료되었습니다!
+            메시지 예약(1주일전) 완료!
           </motion.div>
         ) : (
           <form onSubmit={handleReminderSubmit} className="flex flex-col gap-3 max-w-[280px] mx-auto">
@@ -1061,7 +1060,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                 value={phoneNumber}
                 onChange={(e) => {
                   setPhoneNumber(e.target.value);
-                  // 사용자가 다시 번호를 고치기 시작하면 빨간 에러 메시지를 숨겨주는 센스!
                   if (phoneError) setPhoneError(''); 
                 }}
                 disabled={isSubmitting}
@@ -1069,7 +1067,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                   phoneError ? 'border-red-400 focus:border-red-500' : 'border-gray-200 focus:border-rose-300'
                 } rounded-xl text-[14px] text-center focus:outline-none transition-colors shadow-sm`}
               />
-              {/* ✨ 에러 메시지가 있을 때만 아래 문구가 나타납니다 ✨ */}
               <AnimatePresence>
                 {phoneError && (
                   <motion.p 
@@ -1084,8 +1081,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               </AnimatePresence>
             </div>
 
-            {/* 에러 메시지 공간(절대 위치) 때문에 버튼이 겹치지 않도록 마진(mt-3)을 살짝 줍니다 */}
-            {/* 👇 에러 메시지가 뜰 때만 버튼을 아래로 부드럽게 밀어내도록 간격을 조절합니다 👇 */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -1097,19 +1092,14 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
             </button>
           </form>
         )}
-        {/* 👆 수정된 알림 메시지 폼 영역 끝 👆 */}
-		
-            </div>
-            
-            {/* 👆 알림 메시지 예약 폼 끝 👆 */}
-	  
-	  
-    </div>
-	
-	
-	
-	
+      </div>
+    </>
   );
+	  
+	
+	
+	
+  
 })()}
           </FadeIn>
         </section>
