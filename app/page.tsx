@@ -257,6 +257,64 @@ export default function WeddingInvitation() {
   // 👇 새로 추가할 갤러리용 상태 및 데이터 👇
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  
+  // 👇 알림 메시지 예약 폼 상태 👇
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // ✨ 새로 추가: 에러 메시지를 관리할 상태 ✨
+  const [phoneError, setPhoneError] = useState('');
+
+  const handleReminderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPhoneError(''); // 제출 버튼을 누르면 일단 기존 에러를 초기화합니다.
+
+    // 숫자만 깔끔하게 추려냅니다.
+    const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+
+    // 👇 빈 값이거나, 번호 길이가 10자리~11자리가 아니면 에러 발생! 👇
+    if (!cleanNumber || cleanNumber.length < 10 || cleanNumber.length > 11) {
+      setPhoneError('정확한 전화번호를 입력해주세요');
+      return; // 에러가 났으니 아래쪽 전송 코드는 실행하지 않고 멈춥니다.
+    }
+
+    setIsSubmitting(true);
+    try {
+      // ✨ 여기에 Formspree나 Web3Forms에서 발급받은 URL을 넣으세요! ✨
+      // 예시: https://formspree.io/f/mabcdefg
+      await fetch('https://formspree.io/f/mojplqdq', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone: phoneNumber })
+      });
+      setIsSubmitted(true);
+    } catch (error) {
+      alert('전송에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // 👇 새로 추가: TOP 버튼 표시 상태 및 스크롤 감지 로직 👇
+  const [showTopButton, setShowTopButton] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // 스크롤이 맨 아래에서 400px 이내로 근접했을 때만 버튼이 나타나게 합니다.
+      const isNearBottom = document.documentElement.scrollHeight - window.innerHeight - window.scrollY < 400;
+      setShowTopButton(isNearBottom);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  // 👆 TOP 버튼 로직 끝 👆
+  
+  
+  
   // 👇 1. 프리로딩 타이머 상태 추가 👇
   const [preloadGallery, setPreloadGallery] = useState(false);
   // ✨ 새로 추가: 스크롤이 갤러리에 도달했는지 기억하는 상태 ✨
@@ -973,7 +1031,84 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
       <p className="text-[15px] text-gray-600 font-medium mt-2 break-keep">
         {descriptionText}
       </p>
+	  
+	  
+	  {/* 👇 D-DAY 카운터 끝나는 부분 밑에 추가 👇 */}
+            
+            <div className="mt-8 border-t border-gray-100 pt-8">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <MessageCircle size={15} className="text-rose-400" />
+                <h3 className="font-medium text-blue-500 text-[15px]">예식 알림 메시지 받기</h3>
+				<MessageCircle size={15} className="text-rose-400 -scale-x-100" />
+              </div>
+
+
+              {/* 👇 수정된 알림 메시지 폼 영역 👇 */}
+        {isSubmitted ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className="bg-rose-50 text-rose-500 p-4 rounded-xl text-[14px] font-medium"
+          >
+            메시지 전송 예약(1주일전)이 완료되었습니다!
+          </motion.div>
+        ) : (
+          <form onSubmit={handleReminderSubmit} className="flex flex-col gap-3 max-w-[280px] mx-auto">
+            <div className="relative">
+              <input
+                type="tel"
+                placeholder="전화번호 입력 (숫자만)"
+                value={phoneNumber}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  // 사용자가 다시 번호를 고치기 시작하면 빨간 에러 메시지를 숨겨주는 센스!
+                  if (phoneError) setPhoneError(''); 
+                }}
+                disabled={isSubmitting}
+                className={`w-full p-3.5 bg-white border ${
+                  phoneError ? 'border-red-400 focus:border-red-500' : 'border-gray-200 focus:border-rose-300'
+                } rounded-xl text-[14px] text-center focus:outline-none transition-colors shadow-sm`}
+              />
+              {/* ✨ 에러 메시지가 있을 때만 아래 문구가 나타납니다 ✨ */}
+              <AnimatePresence>
+                {phoneError && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -5 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -5 }}
+                    className="text-red-500 text-[12px] mt-2 font-medium absolute w-full text-center"
+                  >
+                    {phoneError}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 에러 메시지 공간(절대 위치) 때문에 버튼이 겹치지 않도록 마진(mt-3)을 살짝 줍니다 */}
+            {/* 👇 에러 메시지가 뜰 때만 버튼을 아래로 부드럽게 밀어내도록 간격을 조절합니다 👇 */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full p-3.5 bg-rose-400 text-white rounded-xl font-medium text-[14px] active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:active:scale-100 shadow-sm ${
+                phoneError ? 'mt-5' : 'mt-2'
+              }`}
+            >
+              {isSubmitting ? '예약 중...' : '메시지 알림 예약하기'}
+            </button>
+          </form>
+        )}
+        {/* 👆 수정된 알림 메시지 폼 영역 끝 👆 */}
+		
+            </div>
+            
+            {/* 👆 알림 메시지 예약 폼 끝 👆 */}
+	  
+	  
     </div>
+	
+	
+	
+	
   );
 })()}
           </FadeIn>
@@ -1448,7 +1583,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                 <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-400 shadow-sm">
                   <CalendarIcon size={22} />
                 </div>
-                【알람 등록】
+                【일정 등록】
               </button>
 
             </div>
@@ -1622,6 +1757,25 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
           </motion.div>
         )}
       </AnimatePresence>
+	  
+	  {/* 👇 🌟 대망의 마지막 기능: TOP으로 가기 버튼 🌟 👇 */}
+      <AnimatePresence>
+        {showTopButton && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            // 버튼 클릭 시 맨 위로 부드럽게(smooth) 스크롤!
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-10 right-6 z-[300] w-12 h-12 flex items-center justify-center bg-white/80 text-gray-500 backdrop-blur-md rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-200/50 active:scale-95 transition-transform"
+          >
+            <ChevronUp size={26} strokeWidth={2} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+      {/* 👆 TOP 버튼 끝 👆 */}
+	  
+	  
     </main>
   );
 }
