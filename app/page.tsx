@@ -509,7 +509,7 @@ export default function WeddingInvitation() {
         if (!document.hidden) {
           window.open(fallbackWebUrl, '_blank');
         }
-      }, 500);
+      }, 2000);
     }
   };
 
@@ -542,7 +542,7 @@ export default function WeddingInvitation() {
         if (!document.hidden) {
           window.open(storeUrl, '_blank');
         }
-      }, 500);
+      }, 2000);
     }
   };
   
