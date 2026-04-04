@@ -867,12 +867,12 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
               />
             </motion.div>
             
-			<p className="font-point leading-[1.8] text-[16px] mb-5 whitespace-nowrap break-keep">
+			<p className="font-point leading-[1.8] text-[15px] sm:text-[16px] tracking-tight sm:tracking-normal mb-5 whitespace-nowrap break-keep -mx-8">
               귀한 걸음 하시어 두 사람의 빛나는 시작을<br />
               기쁜 마음으로 축복해주시면 감사하겠습니다
             </p>
 			
-            <div className="flex justify-center items-center text-[18px] font-point2 font-normal">
+            <div className="flex justify-center items-center text-[22px] font-point2 font-normal">
 			{/* 왼쪽: 부모님 성함 */}
 				<div className="text-right text-gray-700 leading-relaxed">
 					<p>장규암 &middot; 라말분</p>
@@ -884,12 +884,12 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
 					<p className="flex items-baseline">
 					<span className="text-[13px] text-gray-400 w-[5px] text-center">의</span>
 					<span className="text-[13px] text-gray-400 w-[55px] text-center">아들</span>
-					<span className="font-bold text-gray-900">장상엽</span>
+					<span className="font-bold text-gray-900">상  엽</span>
 					</p>
 					<p className="mt-1 flex items-baseline">
 					<span className="text-[13px] text-gray-400 w-[5px] text-center">의</span>
 					<span className="text-[13px] text-gray-400 w-[55px] text-center">딸</span>
-					<span className="font-bold text-gray-900">박진솔</span>
+					<span className="font-bold text-gray-900">진  솔</span>
 					</p>
 				</div>
 			</div>
