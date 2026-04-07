@@ -755,7 +755,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                   SANGYEOP & JINSOL
                 </p>
                 <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug drop-shadow-md">
-                  We are<br />
+                  We're<br />
                   <span className="italic font-light">Getting Married!</span>
                 </h1>
                 <div className="w-[80px] h-[1px] bg-gray-400 mt-10 mx-auto" />
