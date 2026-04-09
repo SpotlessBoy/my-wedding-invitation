@@ -3,11 +3,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Phone, MessageCircle, Heart, Copy, Calendar as CalendarIcon, Map, X, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Utensils, Flower2 } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
+import { Playfair_Display } from 'next/font/google';
 import Image from 'next/image';
 import PetalRain from './components/PetalRain'; // 꽃입 컴포넌트
 import NaverMap from './components/NaverMap'; // 네이버 지도 컴포넌트
 import Script from 'next/script';
 
+
+
+// 2. 폰트 설정 (기울임꼴 포함)
+const playfair = Playfair_Display({ subsets: ['latin'], style: ['italic'] });
 
 const brightWeddingColors = ['#FFD1DC', '#FFFFE0', '#FFDAB9', '#FFFFF0', '#FFB6C1', '#FFF8DC'];
 // 하트가 아닌 진짜 '꽃잎(Teardrop)' 모양 SVG
@@ -754,12 +759,12 @@ END:VCALENDAR`.replace(/\n/g, '\r\n'); // 👈 순서를 바꿨습니다! 하루
                 <p className="text-xs tracking-[0.4em] text-rose-400 mb-6 font-medium drop-shadow-md">
                   SANGYEOP & JINSOL
                 </p>
-                <h1 className="text-3xl font-serif tracking-widest text-gray-800 leading-snug drop-shadow-md">
-                  We're<br />
-                  <span className="italic font-light">Getting Married!</span>
-                </h1>
-                <div className="w-[80px] h-[1px] bg-gray-400 mt-10 mx-auto" />
-              </motion.div>
+                <h1 className={`${playfair.className} italic -skew-x-[10deg] text-4xl text-gray-800 leading-tight drop-shadow-md`}>
+    We're<br />
+    <span>Getting Married!</span>
+  </h1>
+  <div className="w-[80px] h-[1px] bg-gray-400 mt-10 mx-auto" />
+				</motion.div>
 
             </motion.div>
           </motion.div>
