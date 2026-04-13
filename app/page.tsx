@@ -527,25 +527,30 @@ export default function WeddingInvitation() {
     const ua = navigator.userAgent.toLowerCase();
     const isKakao = ua.indexOf('kakaotalk') > -1;
     const isAndroid = ua.indexOf('android') > -1;
-    const isIOS = /iphone|ipad|ipod/.test(ua);
 
     const storeUrl = isAndroid 
       ? "market://details?id=com.skt.tmap.ku" 
       : "https://apps.apple.com/kr/app/id431589174";
 
     if (isKakao && isAndroid) {
-      // 📱 안드로이드 + 카카오톡: 티맵 intent 스킴
+      // 📱 안드로이드 + 카카오톡: 티맵 intent 스킴으로 앱 강제 실행
       window.location.href = `intent://route?goalname=${dname}&goalx=128.611285546387&goaly=35.9069985378003#Intent;scheme=tmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.skt.tmap.ku;end`;
-    } else if (isKakao && isIOS) {
-      // 🍎 아이폰 + 카카오톡: 티맵은 별도 웹 길찾기가 없으므로 앱스토어 링크로 탈출시킵니다.
-      // 사파리에서 앱스토어 링크가 열리면 iOS가 자동으로 상단에 "T맵 앱 열기" 배너를 띄워줍니다.
-      window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(storeUrl);
     } else {
-      // 🌐 일반 브라우저
+      // 🍎 아이폰(카카오톡/사파리) 및 기타 브라우저
+      // 1. 앱스토어로 바로 가지 않고, 무조건 티맵 스킴(tmap://)을 먼저 호출합니다.
       window.location.href = scheme;
+      
+      // 2. 2초 뒤에도 화면에 머물러 있다면 (앱이 없어서 안 열린 경우)
       setTimeout(() => {
-        if (!document.hidden) {
-          window.open(storeUrl, '_blank');
+        const isHidden = document.hidden || document.visibilityState === 'hidden';
+        if (!isHidden) {
+          if (isKakao) {
+            // 카카오톡 내부 브라우저에서 스토어로 보낼 때는 외부 브라우저(사파리) 탈출 기능 사용
+            window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(storeUrl);
+          } else {
+            // 일반 사파리/크롬 등에서는 바로 새 창으로 스토어 열기
+            window.location.href = storeUrl;
+          }
         }
       }, 2000);
     }
